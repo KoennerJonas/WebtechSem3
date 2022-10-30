@@ -4,7 +4,7 @@
 .gradle/
 build/
 bin/
-gradle/
+
 # Log file
 *.log
 
