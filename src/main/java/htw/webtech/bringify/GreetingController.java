@@ -1,4 +1,4 @@
-package htw.webtech.demo;
+package htw.webtech.bringify;
 
 
 import org.springframework.stereotype.Controller;
