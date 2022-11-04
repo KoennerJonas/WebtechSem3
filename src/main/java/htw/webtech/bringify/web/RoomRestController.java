@@ -15,8 +15,8 @@ public class RoomRestController {
 
     public RoomRestController(){
         rooms = new ArrayList<>();
-        rooms.add(new Room("Party bei Jonas", "gurke", null, null, null ));
-        rooms.add(new Room("Party bei Philipp", "Tomate", null, null, null ));
+        rooms.add(new Room(1,"Party bei Jonas", "gurke", null, null, null ));
+        rooms.add(new Room(2,"Party bei Philipp", "Tomate", null, null, null ));
     }
 
 

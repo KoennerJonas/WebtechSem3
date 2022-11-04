@@ -3,18 +3,25 @@ package htw.webtech.bringify.web.api;
 import java.util.ArrayList;
 
 public class Room {
+
+    private long id;
     private String roomName;
     private String keyword;
-    private User owner;
-    private ArrayList<User> members;
-    private ArrayList<Item> Items;
+    private long owner;
+    private long members;
+    private long Items;
 
-    public Room(String roomName, String keyword, User owner, ArrayList<User> members, ArrayList<Item> items) {
+    public Room(long id, String roomName, String keyword, long owner, long members, long items) {
+        this.id = id;
         this.roomName = roomName;
         this.keyword = keyword;
         this.owner = owner;
         this.members = members;
         Items = items;
+    }
+
+    public long getId() {
+        return id;
     }
 
     public String getRoomName() {
@@ -33,27 +40,27 @@ public class Room {
         this.keyword = keyword;
     }
 
-    public User getOwner() {
+    public long getOwner() {
         return owner;
     }
 
-    public void setOwner(User owner) {
+    public void setOwner(long owner) {
         this.owner = owner;
     }
 
-    public ArrayList<User> getMembers() {
+    public long getMembers() {
         return members;
     }
 
-    public void setMembers(ArrayList<User> members) {
+    public void setMembers(long members) {
         this.members = members;
     }
 
-    public ArrayList<Item> getItems() {
+    public long getItems() {
         return Items;
     }
 
-    public void setItems(ArrayList<Item> items) {
+    public void setItems(long items) {
         Items = items;
     }
 }
