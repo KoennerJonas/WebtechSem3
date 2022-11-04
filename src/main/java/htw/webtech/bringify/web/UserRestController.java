@@ -24,7 +24,7 @@ public class UserRestController {
         return ResponseEntity.ok(userService.findAll());
     }
 
-    @PostMapping(path = "/api/v1/users")
+    @PostMapping(path = "/api/v1/registration")
     public ResponseEntity<Void> createUser(@RequestBody UserManipulationRequest request) throws URISyntaxException {
         var user = userService.create(request);
         URI uri = new URI("/api/v1/users"+ user.getId());

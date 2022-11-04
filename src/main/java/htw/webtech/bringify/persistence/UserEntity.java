@@ -23,6 +23,9 @@ public class UserEntity {
     @Column(nullable = false)
     private String password;
 
+    @Column(nullable = false)
+    private boolean enabled = false;
+
     public UserEntity( String username, String mail, String password) {
         this.username = username;
         this.mail = mail;
@@ -62,4 +65,13 @@ public class UserEntity {
     public void setPassword(String password) {
         this.password = password;
     }
+
+    public boolean isEnabled() {
+        return enabled;
+    }
+
+    public void setEnabled(boolean enabled) {
+        this.enabled = enabled;
+    }
 }
+

@@ -4,6 +4,7 @@ import htw.webtech.bringify.persistence.UserEntity;
 import htw.webtech.bringify.web.api.User;
 import htw.webtech.bringify.persistence.UserRepository;
 import htw.webtech.bringify.web.api.UserManipulationRequest;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -12,6 +13,7 @@ import java.util.stream.Collectors;
 @Service
 public class UserService {
     private final UserRepository userRepository;
+    private BCryptPasswordEncoder bCryptPasswordEncoder;
     public UserService(UserRepository userRepository) {
         this.userRepository = userRepository;
     }
@@ -22,7 +24,8 @@ public class UserService {
     }
 
     public User create(UserManipulationRequest request){
-        var userEntity = new UserEntity(request.getMail(),request.getUsername(), request.getPassword());
+        String encodedPassword = bCryptPasswordEncoder.encode(request.getPassword());
+        var userEntity = new UserEntity(request.getMail(),request.getUsername(), encodedPassword);
         userEntity = userRepository.save(userEntity);
         return transformEntity(userEntity);
     }
