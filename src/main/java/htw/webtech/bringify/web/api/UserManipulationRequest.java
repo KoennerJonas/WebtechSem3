@@ -1,24 +1,14 @@
 package htw.webtech.bringify.web.api;
 
-public class User {
-    private Long id;
+public class UserManipulationRequest {
     private String username;
     private String mail;
     private String password;
 
-    public User(Long id, String username, String mail, String password) {
-        this.id = id;
+    public UserManipulationRequest( String username, String mail, String password) {
         this.username = username;
         this.mail = mail;
         this.password = password;
-    }
-
-    public Long getId() {
-        return id;
-    }
-
-    public void setId(Long id) {
-        this.id = id;
     }
 
     public String getUsername() {
