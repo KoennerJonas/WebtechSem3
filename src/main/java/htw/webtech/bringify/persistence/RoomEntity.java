@@ -26,14 +26,13 @@ public class RoomEntity {
     @Column(name = "owner", nullable = false)
     private long owner;
 
-    @Column(name = "members")
+    @Column(name = "members", nullable = false)
     private long members;
 
     @Column(name = "Items")
     private long Items;
 
-    public RoomEntity(long id, String roomName, String keyword, long owner, long members, long items) {
-        this.id = id;
+    public RoomEntity(String roomName, String keyword, long owner, long members, long items) {
         this.roomName = roomName;
         this.keyword = keyword;
         this.owner = owner;
