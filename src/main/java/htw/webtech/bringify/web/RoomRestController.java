@@ -10,7 +10,7 @@ import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.List;
 
-@RestController
+@RestController//sorgt auch dafür, dass dem Browser das Ergebnis der Rest-Methoden als JSON zurückgegeben wird
 public class RoomRestController {
 
     private final RoomService roomService;
@@ -48,6 +48,11 @@ public class RoomRestController {
     public ResponseEntity<Room> updateRooms(@PathVariable Long id, @RequestBody RoomManipulationRequest request){
         var room = roomService.updateRoom(id, request);
         return room != null ? ResponseEntity.ok(room) : ResponseEntity.notFound().build();
+    }
+
+    @DeleteMapping(path = "/api/v1/rooms/{id}")
+    public boolean deleteRooms(Long id){
+         return roomService.deleteRoom(id);
     }
 
 }

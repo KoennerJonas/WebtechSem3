@@ -37,6 +37,14 @@ public class RoomService {
         return roomEntityToRoom(roomEntity);
     }
 
+    public boolean deleteRoom(Long id){
+        if(roomRepository.existsById(id)){
+            return false;
+        }
+        roomRepository.deleteById(id);
+        return true;
+    }
+
     public Room updateRoom(Long id, RoomManipulationRequest request){
         var entityOtionalEmpty = roomRepository.findById(id);
         if (entityOtionalEmpty.isEmpty()){
