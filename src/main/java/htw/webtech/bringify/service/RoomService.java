@@ -38,11 +38,12 @@ public class RoomService {
     }
 
     public boolean deleteRoom(Long id){
-        if(roomRepository.existsById(id)){
+        if(!roomRepository.existsById(id)){
             return false;
+        }else{
+            return roomRepository.existsById(id);
         }
-        roomRepository.deleteById(id);
-        return true;
+
     }
 
     public Room updateRoom(Long id, RoomManipulationRequest request){

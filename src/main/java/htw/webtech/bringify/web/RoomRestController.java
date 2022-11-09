@@ -51,8 +51,9 @@ public class RoomRestController {
     }
 
     @DeleteMapping(path = "/api/v1/rooms/{id}")
-    public boolean deleteRooms(Long id){
-         return roomService.deleteRoom(id);
+    public ResponseEntity<Void> deleteRooms(@PathVariable Long id){
+        boolean roomFound = roomService.deleteRoom(id);
+        return roomFound ? ResponseEntity.ok().build(): ResponseEntity.notFound().build();
     }
 
 }
