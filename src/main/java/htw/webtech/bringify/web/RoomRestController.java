@@ -56,4 +56,10 @@ public class RoomRestController {
         return roomFound ? ResponseEntity.ok().build(): ResponseEntity.notFound().build();
     }
 
+    @PutMapping(path = "/api/v1/{roomid}/users/{userid}")
+    public ResponseEntity<Void> enroledUser(@PathVariable Long roomid, @PathVariable Long userid){
+        boolean success = roomService.addUserToRoom(roomid,userid);
+        return success ? ResponseEntity.ok().build() : ResponseEntity.notFound().build();
+    }
+
 }

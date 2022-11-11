@@ -49,7 +49,6 @@ public class UserService {
         if (!userRepository.existsById(id)) {
             return false;
         }
-
         userRepository.deleteById(id);
         return true;
     }

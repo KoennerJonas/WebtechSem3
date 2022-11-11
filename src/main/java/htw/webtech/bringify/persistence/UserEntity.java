@@ -1,13 +1,18 @@
 package htw.webtech.bringify.persistence;
 
 import javax.persistence.*;
+import java.util.HashSet;
+import java.util.Set;
 
 @Entity(name="users")
 public class UserEntity {
 
+    @ManyToMany(mappedBy = "users")
+    private Set<RoomEntity> rooms = new HashSet<>();
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
+
 
     @Column(nullable = false)
     private String username;
@@ -42,6 +47,7 @@ public class UserEntity {
     }
 
     public String getMail() {
+
         return mail;
     }
 
