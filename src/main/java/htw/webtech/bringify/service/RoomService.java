@@ -40,10 +40,9 @@ public class RoomService {
     public boolean deleteRoom(Long id){
         if(!roomRepository.existsById(id)){
             return false;
-        }else{
-            return roomRepository.existsById(id);
         }
-
+        roomRepository.deleteById(id);
+        return true;
     }
 
     public Room updateRoom(Long id, RoomManipulationRequest request){
@@ -71,7 +70,6 @@ public class RoomService {
                 roomEntity.getRoomName(),
                 roomEntity.getKeyword(),
                 roomEntity.getOwner(),
-                roomEntity.getMembers(),
-                roomEntity.getItems());
+                roomEntity.getMembers());
     }
 }
