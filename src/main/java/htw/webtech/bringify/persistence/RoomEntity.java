@@ -35,7 +35,7 @@ public class RoomEntity {
     private long Items;
 
 
-    @ManyToMany
+    @ManyToMany(fetch=FetchType.EAGER)
     @JoinTable(
             name="room_user",
             joinColumns = @JoinColumn(name = "room_id"),
