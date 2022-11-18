@@ -1,5 +1,7 @@
 package htw.webtech.bringify.persistence;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 import javax.persistence.*;
 import java.util.HashSet;
 import java.util.Set;
@@ -7,7 +9,8 @@ import java.util.Set;
 @Entity(name="users")
 public class UserEntity {
 
-    @ManyToMany(mappedBy = "users")
+    @JsonIgnore
+    @ManyToMany(mappedBy = "users", fetch=FetchType.EAGER)
     private Set<RoomEntity> rooms = new HashSet<>();
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

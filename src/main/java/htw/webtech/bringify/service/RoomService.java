@@ -9,6 +9,7 @@ import htw.webtech.bringify.web.api.RoomManipulationRequest;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 @Service
@@ -79,15 +80,19 @@ public class RoomService {
 
     public Boolean addUserToRoom(Long roomid, Long userid){
 
-        var room = roomRepository.findById(roomid).get();
-        var user = userRepository.findById(userid).get();
-        if(room != null && user != null){
-            var users = room.getUsers();
-            users.add(user);
-            room.setUsers(users);
-            return true;
-        }
-        return false;
+        var roomOptional = roomRepository.findById(roomid);
+        var userOptional = userRepository.findById(userid);
 
+        if(roomOptional.isEmpty() || userOptional.isEmpty()){
+            return false;
+        }
+        RoomEntity room = roomOptional.get();
+        UserEntity user = userOptional.get();
+
+        Set<UserEntity> userlist = room.getUsers();
+        userlist.add(user);
+        room.setUsers(userlist);
+        roomRepository.save(room);
+        return true;
     }
 }
