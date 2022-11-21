@@ -16,12 +16,13 @@ import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
 @Service
 public class UserService implements UserDetailsService {
-    private final UserRepository userRepository;
+    private UserRepository userRepository;
     private BCryptPasswordEncoder bCryptPasswordEncoder;
     private final ConfirmationTokenService confirmationTokenService;
     private final ConfirmationTokenRepository confirmationTokenRepository;
@@ -42,13 +43,14 @@ public class UserService implements UserDetailsService {
     }
 
     public User create(UserManipulationRequest request){
-
-        if(userRepository.findByMail(request.getMail()).isPresent()){
+        if(userRepository.existsByMail(request.getMail())){
+            System.out.println(userRepository.findByMail(request.getMail()).isPresent() + request.getMail());
             throw new IllegalStateException("email allready taken");
+
         }
 
         String encodedPassword = bCryptPasswordEncoder.encode(request.getPassword());
-        var userEntity = new UserEntity(request.getMail(),request.getUsername(), encodedPassword);
+        var userEntity = new UserEntity(request.getUsername(), request.getMail(),encodedPassword);
         userEntity = userRepository.save(userEntity);
         String token = UUID.randomUUID().toString();
         ConfirmationTokenEntity confirmationToken = new ConfirmationTokenEntity(token, LocalDateTime.now(),LocalDateTime.now().plusMinutes(15),userEntity);
@@ -58,6 +60,11 @@ public class UserService implements UserDetailsService {
     }
     public User findById(Long id) {
         var userEntity = userRepository.findById(id);
+        return userEntity.map(this::transformEntity).orElse(null);
+    }
+
+    public User findByMail(String mail){
+        var userEntity = userRepository.findByMail(mail);
         return userEntity.map(this::transformEntity).orElse(null);
     }
 
@@ -95,6 +102,7 @@ public class UserService implements UserDetailsService {
         ConfirmationTokenEntity confirmationToken = confirmationTokenService.getToken(token).orElseThrow(() -> new IllegalStateException("token not found"));
         LocalDateTime expiredAt = confirmationToken.getExpiresAt();
         if(expiredAt.isBefore(LocalDateTime.now())){
+            deleteConfirmationToken(token);
             throw new IllegalStateException("token expired");
         }
         enableAppUser(confirmationToken.getUser().getMail());

@@ -22,7 +22,9 @@ public class WebSecurityConfig {
                 .antMatchers("/api/v*/confirm").permitAll()
                 .antMatchers("/api/v1/registration").permitAll()
                 .antMatchers("/api/v1/create_room").permitAll()
+                .antMatchers("/api/v1/users/**").permitAll()
                 .antMatchers("/api/v1/users").permitAll()
+                .antMatchers("/api/v1/users_mail/**").permitAll()
                 .anyRequest().authenticated().and().formLogin().and().build();
     }
 

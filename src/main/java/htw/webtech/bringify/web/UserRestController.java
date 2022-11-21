@@ -42,6 +42,12 @@ public class UserRestController {
         return user != null? ResponseEntity.ok(user) : ResponseEntity.notFound().build();
     }
 
+    @GetMapping(path = "/api/v1/users_mail/{mail}")
+    public ResponseEntity<User> fetchUserByEmail(@PathVariable String mail){
+        var user = userService.findByMail(mail);
+        return  user !=null? ResponseEntity.ok(user) :ResponseEntity.notFound().build();
+    }
+
     @PutMapping(path = "/api/v1/users/{id}")
     public ResponseEntity<User> updateUser(@PathVariable Long id, @RequestBody UserManipulationRequest request) {
         var user = userService.update(id, request);
