@@ -36,7 +36,7 @@ public class RoomRestController {
     }
 
 
-    @PostMapping(path = "/api/v1/rooms")
+    @PostMapping(path = "/api/v1/create_room")
     public ResponseEntity<Void> createRooms(@RequestBody RoomManipulationRequest request) throws URISyntaxException {
         var room =  roomService.createRoom(request);
         //URI ist die Adresse der neu erzeugten Ressource -> id sagt dann die Adresse zu einer bestimmten Resource

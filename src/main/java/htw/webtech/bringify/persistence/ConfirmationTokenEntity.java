@@ -6,6 +6,12 @@ import java.time.LocalDateTime;
 @Entity(name = "confirmation_token")
 public class ConfirmationTokenEntity {
 
+    @SequenceGenerator(
+            name = "confirmation_token_sequence",
+            sequenceName = "confirmation_token_sequence",
+            allocationSize = 1
+    )
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -26,8 +32,7 @@ public class ConfirmationTokenEntity {
     )
     private UserEntity user;
 
-    public ConfirmationTokenEntity(Long id, String token, LocalDateTime creatAt, LocalDateTime expiresAt, UserEntity user) {
-        this.id = id;
+    public ConfirmationTokenEntity(String token, LocalDateTime creatAt, LocalDateTime expiresAt, UserEntity user) {
         this.token = token;
         this.creatAt = creatAt;
         this.expiresAt = expiresAt;

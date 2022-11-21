@@ -31,6 +31,11 @@ public class UserRestController {
         return ResponseEntity.created(uri).build();
     }
 
+    @GetMapping(path = "/api/v1/confirm")
+    public String confirm(@RequestParam("token") String token){
+        return userService.confirmToken(token);
+    }
+
     @GetMapping(path = "/api/v1/users/{id}")
     public ResponseEntity<User> fetchUserById(@PathVariable Long id) {
         var user = userService.findById(id);

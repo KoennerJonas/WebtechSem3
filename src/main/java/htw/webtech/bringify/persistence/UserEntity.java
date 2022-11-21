@@ -1,13 +1,16 @@
 package htw.webtech.bringify.persistence;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.userdetails.UserDetails;
 
 import javax.persistence.*;
+import java.util.Collection;
 import java.util.HashSet;
 import java.util.Set;
 
 @Entity(name="users")
-public class UserEntity {
+public class UserEntity implements UserDetails {
 
     @JsonIgnore
     @ManyToMany(mappedBy = "users", fetch=FetchType.EAGER)
@@ -26,7 +29,7 @@ public class UserEntity {
     @Column(nullable = false)
     private String password;
 
-    @Column(nullable = false)
+    @Column(nullable = true)
     private boolean enabled = false;
 
     public UserEntity( String username, String mail, String password) {
@@ -48,6 +51,21 @@ public class UserEntity {
         return username;
     }
 
+    @Override
+    public boolean isAccountNonExpired() {
+        return true;
+    }
+
+    @Override
+    public boolean isAccountNonLocked() {
+        return true;
+    }
+
+    @Override
+    public boolean isCredentialsNonExpired() {
+        return true;
+    }
+
     public void setUsername(String username) {
         this.username = username;
     }
@@ -59,6 +77,11 @@ public class UserEntity {
 
     public void setMail(String mail) {
         this.mail = mail;
+    }
+
+    @Override
+    public Collection<? extends GrantedAuthority> getAuthorities() {
+        return null;
     }
 
     public String getPassword() {

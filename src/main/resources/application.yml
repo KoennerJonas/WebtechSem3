@@ -22,3 +22,11 @@ spring:
     init:
       platform: postgres
       mode: always
+  mail:
+    host: smtp.gmail.com
+    port: 587
+    username: confirm.bringify@gmail.com
+    password: sdmoadcrylropvha
+    properties.mail.smtp:
+      auth: true
+      starttls.enable: true
