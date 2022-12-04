@@ -67,7 +67,7 @@ public class UserService implements UserDetailsService {
         String token = UUID.randomUUID().toString();
         ConfirmationTokenEntity confirmationToken = new ConfirmationTokenEntity(token, LocalDateTime.now(),LocalDateTime.now().plusMinutes(15),userEntity);
         confirmationTokenService.saveConfirmationToken(confirmationToken);
-        emailSender.sendConfirm(request.getMail(),emailTempConfirm.buildEmail(request.getUsername(),"http://localhost:8081/login?token="+token)); //muss für heroku geändert werden
+        emailSender.sendConfirm(request.getMail(),emailTempConfirm.buildEmail(request.getUsername(),"http://localhost:8081/confirm?token="+token)); //muss für heroku geändert werden
         return transformEntity(userEntity);
     }
     public JwtResponse login(SignInRequest signInRequest){
@@ -132,7 +132,7 @@ public class UserService implements UserDetailsService {
             confirmationTokenRepository.deleteConfirmationTokenByToken(token);
             throw new IllegalStateException("token expired");
         }
-        confirmationToken.getUser().setEnabled(true);
+        userRepository.enableUser(confirmationToken.getUser().getMail());
         confirmationTokenRepository.deleteConfirmationTokenByToken(token);
         return "confirmed";
     }
@@ -149,7 +149,9 @@ public class UserService implements UserDetailsService {
             resetTokenRepository.deleteResetTokenByToken(token);
             return HttpStatus.BAD_REQUEST;
         }
-        resetTokenEntity.getUser().setPassword(resetPasswordRequest.getPassword());
+
+        userRepository.setPassword(resetTokenEntity.getUser().getMail(),bCryptPasswordEncoder.encode(resetPasswordRequest.getPassword()));
+
         resetTokenRepository.deleteResetTokenByToken(token);
         return HttpStatus.OK;
     }

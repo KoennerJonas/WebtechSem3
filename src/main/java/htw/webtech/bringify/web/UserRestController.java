@@ -58,8 +58,8 @@ public class UserRestController {
 
 
 
-    @GetMapping(path = "/api/v1/confirm")
-    public String confirm(@RequestParam("token") String token){
+    @PutMapping(path = "/api/v1/confirm/{token}")
+    public String confirm(@PathVariable String token){
         return userService.confirmToken(token);
     }
 
