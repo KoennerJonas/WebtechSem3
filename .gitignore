@@ -5,6 +5,10 @@
 build/
 bin/
 
+### H2 ###
+*.mv.db
+*.trace.db
+
 # Log file
 *.log
 

@@ -17,6 +17,8 @@ public class RoomManipulationRequest {
         Items = items;
     }
 
+    public RoomManipulationRequest(){}
+
     public String getRoomName() {
         return roomName;
     }

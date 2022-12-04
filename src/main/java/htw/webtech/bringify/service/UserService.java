@@ -1,13 +1,22 @@
 package htw.webtech.bringify.service;
 
-import htw.webtech.bringify.persistence.ConfirmationTokenEntity;
-import htw.webtech.bringify.persistence.ConfirmationTokenRepository;
-import htw.webtech.bringify.persistence.UserEntity;
+import htw.webtech.bringify.persistence.*;
+import htw.webtech.bringify.security.email.EmailTempConfirm;
 import htw.webtech.bringify.security.email.EmailSender;
-import htw.webtech.bringify.security.email.EmailTemp;
+import htw.webtech.bringify.security.email.EmailTempReset;
+import htw.webtech.bringify.security.jwt.JwtUtil;
+import htw.webtech.bringify.security.jwt.UserDetailsImpl;
+import htw.webtech.bringify.security.jwt.dto.JwtResponse;
+import htw.webtech.bringify.security.jwt.dto.SignInRequest;
+import htw.webtech.bringify.web.api.ResetPasswordRequest;
 import htw.webtech.bringify.web.api.User;
-import htw.webtech.bringify.persistence.UserRepository;
 import htw.webtech.bringify.web.api.UserManipulationRequest;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
@@ -16,7 +25,6 @@ import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
 import java.util.List;
-import java.util.Optional;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
@@ -25,16 +33,25 @@ public class UserService implements UserDetailsService {
     private UserRepository userRepository;
     private BCryptPasswordEncoder bCryptPasswordEncoder;
     private final ConfirmationTokenService confirmationTokenService;
+    private final ResetTokenService resetTokenService;
+    private final ResetTokenRepository resetTokenRepository;
     private final ConfirmationTokenRepository confirmationTokenRepository;
     private final EmailSender emailSender;
 
-    private final EmailTemp emailTemp = new EmailTemp();
-    public UserService(UserRepository userRepository, BCryptPasswordEncoder bCryptPasswordEncoder, ConfirmationTokenService confirmationTokenService, ConfirmationTokenRepository confirmationTokenRepository, EmailSender emailSender) {
+    private AuthenticationManager authenticationManager;
+    private JwtUtil jwtUtil;
+    private final EmailTempConfirm emailTempConfirm = new EmailTempConfirm();
+    private final EmailTempReset emailTempReset = new EmailTempReset();
+    public UserService(UserRepository userRepository, BCryptPasswordEncoder bCryptPasswordEncoder, ConfirmationTokenService confirmationTokenService, ResetTokenService resetTokenService, ResetTokenRepository resetTokenRepository, ConfirmationTokenRepository confirmationTokenRepository, EmailSender emailSender, JwtUtil jwtUtil, AuthenticationManager authenticationManager) {
         this.userRepository = userRepository;
         this.bCryptPasswordEncoder = bCryptPasswordEncoder;
         this.confirmationTokenService = confirmationTokenService;
+        this.resetTokenService = resetTokenService;
+        this.resetTokenRepository = resetTokenRepository;
         this.confirmationTokenRepository = confirmationTokenRepository;
         this.emailSender = emailSender;
+        this.jwtUtil = jwtUtil;
+        this.authenticationManager = authenticationManager;
     }
 
     public List<User> findAll(){
@@ -43,11 +60,6 @@ public class UserService implements UserDetailsService {
     }
 
     public User create(UserManipulationRequest request){
-        if(userRepository.existsByMail(request.getMail())){
-            System.out.println(userRepository.findByMail(request.getMail()).isPresent() + request.getMail());
-            throw new IllegalStateException("email allready taken");
-
-        }
 
         String encodedPassword = bCryptPasswordEncoder.encode(request.getPassword());
         var userEntity = new UserEntity(request.getUsername(), request.getMail(),encodedPassword);
@@ -55,8 +67,23 @@ public class UserService implements UserDetailsService {
         String token = UUID.randomUUID().toString();
         ConfirmationTokenEntity confirmationToken = new ConfirmationTokenEntity(token, LocalDateTime.now(),LocalDateTime.now().plusMinutes(15),userEntity);
         confirmationTokenService.saveConfirmationToken(confirmationToken);
-        emailSender.send(request.getMail(),emailTemp.buildEmail(request.getUsername(),"https://bringify.herokuapp.com/api/v1/confirm?token="+token)); //muss für heroku geändert werden
+        emailSender.sendConfirm(request.getMail(),emailTempConfirm.buildEmail(request.getUsername(),"http://localhost:8081/login?token="+token)); //muss für heroku geändert werden
         return transformEntity(userEntity);
+    }
+    public JwtResponse login(SignInRequest signInRequest){
+        Authentication authentication = authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(signInRequest.getUsername(), signInRequest.getPassword()));
+        SecurityContextHolder.getContext().setAuthentication(authentication);
+        String jwt = jwtUtil.generateJwtToken(authentication);
+        UserDetailsImpl userDetails = (UserDetailsImpl) authentication.getPrincipal();
+        List<String> roles = userDetails.getAuthorities().stream()
+                .map(item -> item.getAuthority())
+                .collect(Collectors.toList());
+        JwtResponse res = new JwtResponse();
+        res.setToken(jwt);
+        res.setId(userDetails.getId());
+        res.setUsername(userDetails.getUsername());
+        res.setRoles(roles);
+        return res;
     }
     public User findById(Long id) {
         var userEntity = userRepository.findById(id);
@@ -102,23 +129,43 @@ public class UserService implements UserDetailsService {
         ConfirmationTokenEntity confirmationToken = confirmationTokenService.getToken(token).orElseThrow(() -> new IllegalStateException("token not found"));
         LocalDateTime expiredAt = confirmationToken.getExpiresAt();
         if(expiredAt.isBefore(LocalDateTime.now())){
-            deleteConfirmationToken(token);
+            confirmationTokenRepository.deleteConfirmationTokenByToken(token);
             throw new IllegalStateException("token expired");
         }
-        enableAppUser(confirmationToken.getUser().getMail());
-        deleteConfirmationToken(token);
+        confirmationToken.getUser().setEnabled(true);
+        confirmationTokenRepository.deleteConfirmationTokenByToken(token);
         return "confirmed";
     }
 
-    public int enableAppUser(String mail) {
-        return userRepository.enableAppUser(mail);
+    public HttpStatus resetPassword(ResetPasswordRequest resetPasswordRequest){
+        String token = resetPasswordRequest.getToken();
+        if(!resetTokenRepository.existsByToken(token)){
+            return HttpStatus.NOT_FOUND;
+        }
+        ResetTokenEntity resetTokenEntity = resetTokenService.getToken(token).get();
+
+        LocalDateTime expiredAt = resetTokenEntity.getExpiresAt();
+        if(expiredAt.isBefore(LocalDateTime.now())){
+            resetTokenRepository.deleteResetTokenByToken(token);
+            return HttpStatus.BAD_REQUEST;
+        }
+        resetTokenEntity.getUser().setPassword(resetPasswordRequest.getPassword());
+        resetTokenRepository.deleteResetTokenByToken(token);
+        return HttpStatus.OK;
     }
-    public void deleteConfirmationToken(String token){
-        confirmationTokenRepository.deleteConfirmationTokenByToken(token);
+    public void sendResetEmail(String email){
+        UserEntity userEntity = userRepository.findByMail(email).get();
+        String token = UUID.randomUUID().toString();
+        ResetTokenEntity resetTokenEntity = new ResetTokenEntity(token, LocalDateTime.now(),LocalDateTime.now().plusMinutes(15),userEntity);
+        resetTokenService.saveResetToken(resetTokenEntity);
+        emailSender.sendReset(email,emailTempReset.buildEmail(userEntity.getUsername(),"http://localhost:8081/new_password?token="+token));
     }
 
     @Override
-    public UserDetails loadUserByUsername(String mail) throws UsernameNotFoundException {
-        return userRepository.findByMail(mail).orElseThrow(()-> new UsernameNotFoundException(""));
+    public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
+        UserEntity user = userRepository.findByUsername(username).orElseThrow(() -> new UsernameNotFoundException("User not found with username" + username));
+        return UserDetailsImpl.build(user);
     }
+
+
 }

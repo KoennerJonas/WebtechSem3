@@ -11,6 +11,8 @@ public class UserManipulationRequest {
         this.password = password;
     }
 
+    public UserManipulationRequest(){}
+
     public String getUsername() {
         return username;
     }

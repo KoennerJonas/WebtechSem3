@@ -32,7 +32,21 @@ public class UserEntity implements UserDetails {
     @Column(nullable = true)
     private boolean enabled = false;
 
-    public UserEntity( String username, String mail, String password) {
+    @ManyToMany(fetch = FetchType.EAGER)
+    @JoinTable(name = "users_to_roles",
+            joinColumns = @JoinColumn(name="user_id"),
+            inverseJoinColumns = @JoinColumn(name="role_id"))
+    private Set<RolesEntity> roles = new HashSet<>();
+
+    public void setRoles(Set<RolesEntity> roles) {
+        this.roles = roles;
+    }
+
+    public Set<RolesEntity> getRoles() {
+        return roles;
+    }
+
+    public UserEntity(String username, String mail, String password) {
         this.username = username;
         this.mail = mail;
         this.password = password;
