@@ -23,36 +23,36 @@ public class RoomService {
         this.userRepository = userRepository;
     }
 
-    public List<Room> findAll(){
+    public List<Room> findAll() {
         List<RoomEntity> rooms = roomRepository.findAll();
         return rooms.stream()
                 .map(this::roomEntityToRoom)
                 .collect(Collectors.toList());
     }
 
-    public Room findRoomByID(Long id){
+    public Room findRoomByID(Long id) {
         var roomEntity = roomRepository.findById(id);
-        return roomEntity.isPresent() ? roomEntityToRoom(roomEntity.get()): null;
+        return roomEntity.isPresent() ? roomEntityToRoom(roomEntity.get()) : null;
     }
 
     //room wird zurückgesendet, da wir die von der Datenbank erstellte ID haben wollen
-    public Room createRoom(RoomManipulationRequest request){
-        var roomEntity = new RoomEntity(request.getRoomName(), request.getKeyword(), request.getOwner(), request.getMembers(), request.getItems());
+    public Room createRoom(RoomManipulationRequest request) {
+        var roomEntity = new RoomEntity(request.getRoomName(), request.getKeyword(),request.getBeschreibung(), request.getOwner(), request.getMembers(), request.getItems());
         roomEntity = roomRepository.save(roomEntity);
         return roomEntityToRoom(roomEntity);
     }
 
-    public boolean deleteRoom(Long id){
-        if(!roomRepository.existsById(id)){
+    public boolean deleteRoom(Long id) {
+        if (!roomRepository.existsById(id)) {
             return false;
         }
         roomRepository.deleteById(id);
         return true;
     }
 
-    public Room updateRoom(Long id, RoomManipulationRequest request){
+    public Room updateRoom(Long id, RoomManipulationRequest request) {
         var entityOtionalEmpty = roomRepository.findById(id);
-        if (entityOtionalEmpty.isEmpty()){
+        if (entityOtionalEmpty.isEmpty()) {
             return null;
         }
 
@@ -66,24 +66,25 @@ public class RoomService {
 
         //da mit roomRepository.findById(id) eine Entität mit ID von der Datenbank zurückgegeben wird und diese ID beibehalten wird,
         //weiß das Framework das hier nur aktualisiert werden muss
-        roomEntity= roomRepository.save(roomEntity);
+        roomEntity = roomRepository.save(roomEntity);
         return roomEntityToRoom(roomEntity);
     }
 
-    public Room roomEntityToRoom(RoomEntity roomEntity){
+    public Room roomEntityToRoom(RoomEntity roomEntity) {
         return new Room(roomEntity.getId(),
                 roomEntity.getRoomName(),
                 roomEntity.getKeyword(),
+                roomEntity.getBeschreibung(),
                 roomEntity.getOwner(),
                 roomEntity.getMembers());
     }
 
-    public Boolean addUserToRoom(Long roomid, Long userid){
+    public Boolean addUserToRoom(Long roomid, Long userid) {
 
         var roomOptional = roomRepository.findById(roomid);
         var userOptional = userRepository.findById(userid);
 
-        if(roomOptional.isEmpty() || userOptional.isEmpty()){
+        if (roomOptional.isEmpty() || userOptional.isEmpty()) {
             return false;
         }
         RoomEntity room = roomOptional.get();

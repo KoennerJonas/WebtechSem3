@@ -5,16 +5,18 @@ public class RoomManipulationRequest {
 
     private String roomName;
     private String keyword;
+    private String beschreibung;
     private long owner;
     private long members;
     private long Items;
 
-    public RoomManipulationRequest(String roomName, String keyword, long owner, long members, long items) {
+    public RoomManipulationRequest(String roomName, String keyword, String beschreibung, long owner, long members, long items) {
         this.roomName = roomName;
         this.keyword = keyword;
         this.owner = owner;
         this.members = members;
         Items = items;
+        this.beschreibung = beschreibung;
     }
 
     public RoomManipulationRequest(){}
@@ -57,5 +59,13 @@ public class RoomManipulationRequest {
 
     public void setItems(long items) {
         Items = items;
+    }
+
+    public String getBeschreibung() {
+        return beschreibung;
+    }
+
+    public void setBeschreibung(String beschreibung) {
+        this.beschreibung = beschreibung;
     }
 }

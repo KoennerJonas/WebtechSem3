@@ -24,11 +24,11 @@ public class RoomEntity {
 
     @Column(name = "keyword", nullable = false)
     private String keyword;
-
+    @Column(name = "beschreibung", nullable = true)
+    private String beschreibung;
     @Column(name = "owner", nullable = false)
     private long owner;
-
-    @Column(name = "members", nullable = false)
+    @Column(name = "members", nullable = true)
     private long members;
 
     @Column(name = "Items")
@@ -43,12 +43,13 @@ public class RoomEntity {
     )
     private Set<UserEntity> users = new HashSet<>();
 
-    public RoomEntity(String roomName, String keyword, long owner, long members, long items) {
+    public RoomEntity(String roomName, String keyword, String beschreibung, long owner, long members, long items) {
         this.roomName = roomName;
         this.keyword = keyword;
         this.owner = owner;
         this.members = members;
         Items = items;
+        this.beschreibung = beschreibung;
     }
 
     protected RoomEntity() {
@@ -107,5 +108,13 @@ public class RoomEntity {
 
     public void setUsers(Set<UserEntity> users) {
         this.users = users;
+    }
+
+    public String getBeschreibung() {
+        return beschreibung;
+    }
+
+    public void setBeschreibung(String beschreibung) {
+        this.beschreibung = beschreibung;
     }
 }
