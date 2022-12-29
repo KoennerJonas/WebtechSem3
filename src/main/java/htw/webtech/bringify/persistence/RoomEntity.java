@@ -7,6 +7,7 @@ import htw.webtech.bringify.web.api.User;
 import javax.persistence.*;
 import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 @Entity(name = "rooms")
@@ -31,8 +32,8 @@ public class RoomEntity {
     @Column(name = "members", nullable = true)
     private long members;
 
-    @Column(name = "Items")
-    private long Items;
+    @OneToMany(fetch = FetchType.EAGER)
+    private List<ItemEntity> items = new ArrayList<>();
 
 
     @ManyToMany(fetch=FetchType.EAGER)
@@ -43,12 +44,12 @@ public class RoomEntity {
     )
     private Set<UserEntity> users = new HashSet<>();
 
-    public RoomEntity(String roomName, String keyword, String beschreibung, long owner, long members, long items) {
+    public RoomEntity(String roomName, String keyword, String beschreibung, long owner, long members, List items) {
         this.roomName = roomName;
         this.keyword = keyword;
         this.owner = owner;
         this.members = members;
-        Items = items;
+        this.items = items;
         this.beschreibung = beschreibung;
     }
 
@@ -94,12 +95,12 @@ public class RoomEntity {
         this.members = members;
     }
 
-    public long getItems() {
-        return Items;
+    public List<ItemEntity> getItems() {
+        return items;
     }
 
-    public void setItems(long items) {
-        Items = items;
+    public void setItems(List<ItemEntity> items) {
+        this.items = items;
     }
 
     public Set<UserEntity> getUsers() {

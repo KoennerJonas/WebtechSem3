@@ -3,6 +3,7 @@ package htw.webtech.bringify.web.api;
 
 import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 public class    Room {
@@ -14,14 +15,16 @@ public class    Room {
     private long owner;
     private long members;
 
+    private List<Long> itemIds;
 
-    public Room(long id, String roomName, String keyword, String beschreibung, long owner, long members) {
+    public Room(long id, String roomName, String keyword, String beschreibung, long owner, long members, List<Long> itemIds) {
         this.id = id;
         this.roomName = roomName;
         this.keyword = keyword;
         this.owner = owner;
         this.members = members;
         this.beschreibung = beschreibung;
+        this.itemIds = itemIds;
     }
 
     public long getId() {
@@ -66,6 +69,14 @@ public class    Room {
 
     public void setBeschreibung(String beschreibung) {
         this.beschreibung = beschreibung;
+    }
+
+    public List<Long> getItemIds() {
+        return itemIds;
+    }
+
+    public void setItemIds(List<Long> itemIds) {
+        this.itemIds = itemIds;
     }
 }
 
