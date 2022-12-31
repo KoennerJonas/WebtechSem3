@@ -85,8 +85,15 @@ public class RoomService {
         room.setItems(itemList);
         itemRepositpry.save(itemEntity);
         roomRepository.save(room);
+    }
 
-
+    public List<Item> getAllItemsFromRoom(Long raumId){
+        var itemEntityList = roomRepository.findById(raumId).get().getItems();
+        List<Item> itemList = null;
+        for(ItemEntity i : itemEntityList){
+            itemList.add(new Item(i.getName(),i.getAmmount(),i.getRoom().getId()));
+        }
+        return itemList;
     }
     public Room roomEntityToRoom(RoomEntity roomEntity) {
 

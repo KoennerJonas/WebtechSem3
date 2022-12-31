@@ -57,6 +57,12 @@ public class RoomRestController {
     return ResponseEntity.ok().build();
     }
 
+    @GetMapping(path = "/api/v1/rooms/getitems/{id}")
+    public ResponseEntity<List<Item>> getItems(@PathVariable Long roomid){
+        var items = roomService.getAllItemsFromRoom(roomid);
+        return items != null? ResponseEntity.ok(items):ResponseEntity.notFound().build();
+    }
+
     @DeleteMapping(path = "/api/v1/rooms/{id}")
     public ResponseEntity<Void> deleteRooms(@PathVariable Long id){
         boolean roomFound = roomService.deleteRoom(id);
