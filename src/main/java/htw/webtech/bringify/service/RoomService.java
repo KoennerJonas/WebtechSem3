@@ -1,7 +1,6 @@
 package htw.webtech.bringify.service;
 
 import htw.webtech.bringify.persistence.*;
-import htw.webtech.bringify.web.api.Item;
 import htw.webtech.bringify.web.api.Room;
 import htw.webtech.bringify.web.api.RoomManipulationRequest;
 import org.springframework.stereotype.Service;
