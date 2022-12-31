@@ -1,6 +1,7 @@
 package htw.webtech.bringify.web;
 
 import htw.webtech.bringify.service.RoomService;
+import htw.webtech.bringify.web.api.Item;
 import htw.webtech.bringify.web.api.Room;
 import htw.webtech.bringify.web.api.RoomManipulationRequest;
 import org.springframework.http.ResponseEntity;
@@ -48,6 +49,12 @@ public class RoomRestController {
     public ResponseEntity<Room> updateRooms(@PathVariable Long id, @RequestBody RoomManipulationRequest request){
         var room = roomService.updateRoom(id, request);
         return room != null ? ResponseEntity.ok(room) : ResponseEntity.notFound().build();
+    }
+
+    @PutMapping(path = "/api/v1/rooms/additems")
+    public ResponseEntity<Void> addItem(@RequestBody Item item){
+    roomService.addItemToRoom(item);
+    return ResponseEntity.ok().build();
     }
 
     @DeleteMapping(path = "/api/v1/rooms/{id}")

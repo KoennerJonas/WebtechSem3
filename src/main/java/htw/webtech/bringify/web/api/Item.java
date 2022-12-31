@@ -14,6 +14,10 @@ public class Item {
         this.raumid = raumid;
     }
 
+    public Item() {
+
+    }
+
     public String getName() {
         return name;
     }

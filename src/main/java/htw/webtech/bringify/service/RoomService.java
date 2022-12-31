@@ -1,6 +1,7 @@
 package htw.webtech.bringify.service;
 
 import htw.webtech.bringify.persistence.*;
+import htw.webtech.bringify.web.api.Item;
 import htw.webtech.bringify.web.api.Room;
 import htw.webtech.bringify.web.api.RoomManipulationRequest;
 import org.springframework.stereotype.Service;
@@ -73,6 +74,20 @@ public class RoomService {
         return roomEntityToRoom(roomEntity);
     }
 
+    public void addItemToRoom(Item item ){
+
+        var room = roomRepository.findById(item.getRaumid()).get();
+        List<ItemEntity> itemList = room.getItems();
+
+        ItemEntity itemEntity = new ItemEntity(item.getName(),item.getAmmount(),room);
+        itemList.add(itemEntity);
+
+        room.setItems(itemList);
+        itemRepositpry.save(itemEntity);
+        roomRepository.save(room);
+
+
+    }
     public Room roomEntityToRoom(RoomEntity roomEntity) {
 
         var itemIds = roomEntity.getItems();
