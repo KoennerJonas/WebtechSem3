@@ -1,6 +1,7 @@
 package htw.webtech.bringify.service;
 
 import htw.webtech.bringify.persistence.*;
+import htw.webtech.bringify.web.api.Item;
 import htw.webtech.bringify.web.api.Room;
 import htw.webtech.bringify.web.api.RoomManipulationRequest;
 import org.springframework.stereotype.Service;
@@ -14,10 +15,12 @@ public class RoomService {
     //Datenbank, aus welcher man die Daten bekommt
     private final RoomRepository roomRepository;
     private final UserRepository userRepository;
+    private final ItemRepository itemRepositpry;
 
-    public RoomService(RoomRepository roomRepository, UserRepository userRepository) {
+    public RoomService(RoomRepository roomRepository, UserRepository userRepository, ItemRepository itemRepositpry) {
         this.roomRepository = roomRepository;
         this.userRepository = userRepository;
+        this.itemRepositpry = itemRepositpry;
     }
 
     public List<Room> findAll() {
@@ -54,12 +57,16 @@ public class RoomService {
         }
 
         var roomEntity = entityOtionalEmpty.get();
+        List<ItemEntity> items = null;
+        for (Long i: request.getItems()){
+            items.add(itemRepositpry.findById(i).get());
+        }
 
         roomEntity.setRoomName(request.getRoomName());
         roomEntity.setKeyword(request.getKeyword());
         roomEntity.setOwner(request.getOwner());
         roomEntity.setMembers(request.getMembers());
-        roomEntity.setItems(request.getItems());
+        roomEntity.setItems(items);
 
         //da mit roomRepository.findById(id) eine Entität mit ID von der Datenbank zurückgegeben wird und diese ID beibehalten wird,
         //weiß das Framework das hier nur aktualisiert werden muss
@@ -68,14 +75,21 @@ public class RoomService {
     }
 
     public Room roomEntityToRoom(RoomEntity roomEntity) {
-        var itemIds = roomEntity.getItems().stream().map(ItemEntity::getId).collect(Collectors.toList());
+
+        var itemIds = roomEntity.getItems();
+        List<Long> items = null;
+
+        for (ItemEntity i:itemIds){
+            items.add(i.getId());
+        }
+
         return new Room(roomEntity.getId(),
                 roomEntity.getRoomName(),
                 roomEntity.getKeyword(),
                 roomEntity.getBeschreibung(),
                 roomEntity.getOwner(),
                 roomEntity.getMembers(),
-                itemIds);
+                items);
     }
 
     public Boolean addUserToRoom(Long roomid, Long userid) {

@@ -15,16 +15,16 @@ public class    Room {
     private long owner;
     private long members;
 
-    private List<Long> itemIds;
+    private List<Long> item;
 
-    public Room(long id, String roomName, String keyword, String beschreibung, long owner, long members, List<Long> itemIds) {
+    public Room(long id, String roomName, String keyword, String beschreibung, long owner, long members, List<Long> item) {
         this.id = id;
         this.roomName = roomName;
         this.keyword = keyword;
         this.owner = owner;
         this.members = members;
         this.beschreibung = beschreibung;
-        this.itemIds = itemIds;
+        this.item = item;
     }
 
     public long getId() {
@@ -71,12 +71,12 @@ public class    Room {
         this.beschreibung = beschreibung;
     }
 
-    public List<Long> getItemIds() {
-        return itemIds;
+    public List<Long> getItem() {
+        return item;
     }
 
-    public void setItemIds(List<Long> itemIds) {
-        this.itemIds = itemIds;
+    public void setItem(List<Long> item) {
+        this.item = item;
     }
 }
 

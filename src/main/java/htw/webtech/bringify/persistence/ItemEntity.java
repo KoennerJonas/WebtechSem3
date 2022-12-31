@@ -26,6 +26,11 @@ public class ItemEntity {
         this.room = room;
     }
 
+    public ItemEntity() {
+
+    }
+
+
     public long getId() {
         return id;
     }
