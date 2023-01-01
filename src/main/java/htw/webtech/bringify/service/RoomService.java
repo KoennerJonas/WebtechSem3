@@ -92,7 +92,7 @@ public class RoomService {
     public List<Item> getAllItemsFromRoom(Long raumId){
 
         var itemEntityList = roomRepository.findById(raumId).get().getItems();
-        List<Item> itemList = null;
+        List<Item> itemList = new ArrayList<>();
         for(ItemEntity i : itemEntityList){
             itemList.add(new Item(i.getName(),i.getAmmount(),i.getRoom().getId()));
         }
