@@ -6,6 +6,7 @@ import htw.webtech.bringify.web.api.Room;
 import htw.webtech.bringify.web.api.RoomManipulationRequest;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -85,10 +86,11 @@ public class RoomService {
         room.setItems(itemList);
         itemRepositpry.save(itemEntity);
         roomRepository.save(room);
-        System.out.println(room.getItems());
+        System.out.println(room.getItems().get(0).getName());
     }
 
     public List<Item> getAllItemsFromRoom(Long raumId){
+
         var itemEntityList = roomRepository.findById(raumId).get().getItems();
         List<Item> itemList = null;
         for(ItemEntity i : itemEntityList){
@@ -97,7 +99,7 @@ public class RoomService {
         return itemList;
     }
     public Room roomEntityToRoom(RoomEntity roomEntity) {
-        List<Long> items = null;
+        List<Long> items = new ArrayList<>();
         if(roomEntity.getItems() != null){
             var itemIds = roomEntity.getItems();
 
