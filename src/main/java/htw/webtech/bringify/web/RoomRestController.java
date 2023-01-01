@@ -38,11 +38,11 @@ public class RoomRestController {
 
 
     @PostMapping(path = "/api/v1/create_room")
-    public ResponseEntity<Void> createRooms(@RequestBody RoomManipulationRequest request) throws URISyntaxException {
+    public ResponseEntity<String> createRooms(@RequestBody RoomManipulationRequest request) throws URISyntaxException {
         var room =  roomService.createRoom(request);
-        //URI ist die Adresse der neu erzeugten Ressource -> id sagt dann die Adresse zu einer bestimmten Resource
-        URI uri = new URI("/api/v1/rooms/" + room.getId());
-        return ResponseEntity.created(uri).build();
+
+        var id = Long.toString(room.getId());
+        return ResponseEntity.ok(id);
     }
 
     @PutMapping(path = "/api/v1/rooms/{id}")

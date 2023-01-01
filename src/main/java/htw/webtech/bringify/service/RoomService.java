@@ -58,7 +58,7 @@ public class RoomService {
         }
 
         var roomEntity = entityOtionalEmpty.get();
-        List<ItemEntity> items = null;
+        List<ItemEntity> items = new ArrayList();
         for (Long i: request.getItems()){
             items.add(itemRepositpry.findById(i).get());
         }
