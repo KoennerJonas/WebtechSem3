@@ -58,8 +58,8 @@ public class RoomRestController {
     }
 
     @GetMapping(path = "/api/v1/rooms/getitems/{id}")
-    public ResponseEntity<List<Item>> getItems(@PathVariable Long roomid){
-        var items = roomService.getAllItemsFromRoom(roomid);
+    public ResponseEntity<List<Item>> getItems(@PathVariable Long id){
+        var items = roomService.getAllItemsFromRoom(id);
         return items != null? ResponseEntity.ok(items):ResponseEntity.notFound().build();
     }
 
