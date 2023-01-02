@@ -99,9 +99,16 @@ public class RoomService {
         }
         return itemList;
     }
-    /*
+
     public List<User> getAllUserFromRoom(Long raumId){
-    }*/
+        var userEntityList = roomRepository.findById(raumId).get().getUsers();
+        List<User> userList = new ArrayList<>();
+
+        for(UserEntity u: userEntityList){
+            userList.add(new User(u.getId(),u.getUsername(), u.getMail(), u.getPassword()));
+        }
+        return userList;
+    }
     public Room roomEntityToRoom(RoomEntity roomEntity) {
         List<Long> items = new ArrayList<>();
         if(roomEntity.getItems() != null){

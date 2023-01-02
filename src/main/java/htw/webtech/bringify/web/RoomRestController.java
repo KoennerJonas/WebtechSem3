@@ -4,6 +4,7 @@ import htw.webtech.bringify.service.RoomService;
 import htw.webtech.bringify.web.api.Item;
 import htw.webtech.bringify.web.api.Room;
 import htw.webtech.bringify.web.api.RoomManipulationRequest;
+import htw.webtech.bringify.web.api.User;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -61,6 +62,12 @@ public class RoomRestController {
     public ResponseEntity<List<Item>> getItems(@PathVariable Long id){
         var items = roomService.getAllItemsFromRoom(id);
         return items != null? ResponseEntity.ok(items):ResponseEntity.notFound().build();
+    }
+
+    @GetMapping(path = "/api/v1/rooms/getuser/{id}")
+    public ResponseEntity<List<User>> getUser(@PathVariable Long id){
+        var userList = roomService.getAllUserFromRoom(id);
+        return userList != null? ResponseEntity.ok(userList):ResponseEntity.notFound().build();
     }
 
     @DeleteMapping(path = "/api/v1/rooms/{id}")
