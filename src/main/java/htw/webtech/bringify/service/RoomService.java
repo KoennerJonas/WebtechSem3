@@ -4,6 +4,7 @@ import htw.webtech.bringify.persistence.*;
 import htw.webtech.bringify.web.api.Item;
 import htw.webtech.bringify.web.api.Room;
 import htw.webtech.bringify.web.api.RoomManipulationRequest;
+import htw.webtech.bringify.web.api.User;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
@@ -98,6 +99,9 @@ public class RoomService {
         }
         return itemList;
     }
+    /*
+    public List<User> getAllUserFromRoom(Long raumId){
+    }*/
     public Room roomEntityToRoom(RoomEntity roomEntity) {
         List<Long> items = new ArrayList<>();
         if(roomEntity.getItems() != null){
