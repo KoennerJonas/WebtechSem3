@@ -1,33 +1,20 @@
 package htw.webtech.bringify.web;
 
 import htw.webtech.bringify.persistence.*;
-import htw.webtech.bringify.security.jwt.UserDetailsImpl;
-import htw.webtech.bringify.security.jwt.dto.JwtResponse;
 import htw.webtech.bringify.security.jwt.JwtUtil;
+import htw.webtech.bringify.security.jwt.dto.JwtResponse;
 import htw.webtech.bringify.security.jwt.dto.SignInRequest;
-import htw.webtech.bringify.security.jwt.dto.SignUpRequest;
 import htw.webtech.bringify.service.UserService;
-import htw.webtech.bringify.web.api.ResetEmailRequest;
-import htw.webtech.bringify.web.api.ResetPasswordRequest;
+import htw.webtech.bringify.web.api.*;
 import htw.webtech.bringify.web.api.User;
-import htw.webtech.bringify.web.api.UserManipulationRequest;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.authentication.AuthenticationManager;
-import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContext;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.*;
 
 import java.net.URI;
 import java.net.URISyntaxException;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Optional;
-import java.util.Set;
-import java.util.stream.Collectors;
 
 @RestController
 public class UserRestController {
@@ -35,19 +22,21 @@ public class UserRestController {
 
     private UserRepository userRepository;
     private RolesRepository rolesRepository;
+    private ConfirmationTokenRepository confirmationTokenRepository;
     private PasswordEncoder passwordEncoder;
-
+    private JwtUtil jwtUtil;
     private final UserService userService;
 
     public UserRestController(UserRepository userRepository,
                               PasswordEncoder passwordEncoder,
                               RolesRepository rolesRepository,
-                             UserService userService) {
+                             UserService userService,ConfirmationTokenRepository confirmationTokenRepository,JwtUtil jwtUtil) {
         this.userRepository = userRepository;
         this.rolesRepository = rolesRepository;
         this.passwordEncoder = passwordEncoder;
-
+        this.confirmationTokenRepository = confirmationTokenRepository;
         this.userService = userService;
+        this.jwtUtil = jwtUtil;
     }
 
 
@@ -88,12 +77,12 @@ public class UserRestController {
         return successful? ResponseEntity.ok().build() : ResponseEntity.notFound().build();
     }
 
-    @GetMapping(path = "/api/v1/profile")
-    public User getProfile(){
-        SecurityContext contextHolder = SecurityContextHolder.getContext();
-        Authentication authentication = contextHolder.getAuthentication();
-        User user = (User) authentication.getPrincipal();
-        return user;
+    @PostMapping(path = "/api/v1/current_user")
+    public UserId getCurrentUser(@RequestBody Token token){
+        String username = jwtUtil.getUserNameFromJwtToken(token.getToken());
+        UserEntity userEntity = userRepository.findByUsername(username).get();
+        User user = userService.transformEntity(userEntity);
+        return new UserId(user.getId());
     }
     @PostMapping("/api/v1/signin")
     public ResponseEntity<?> signin(@RequestBody SignInRequest signInRequest) {
@@ -105,6 +94,7 @@ public class UserRestController {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Email not verified");
         }
         JwtResponse res = userService.login(signInRequest);
+        System.out.println(res.getToken());
         return ResponseEntity.ok(res);
     }
     @PostMapping("/api/v1/signup")

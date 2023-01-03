@@ -116,7 +116,7 @@ public class UserService implements UserDetailsService {
         userRepository.deleteById(id);
         return true;
     }
-    private User transformEntity(UserEntity userEntity){
+    public User transformEntity(UserEntity userEntity){
         return new User(
                 userEntity.getId(),
                 userEntity.getUsername(),
