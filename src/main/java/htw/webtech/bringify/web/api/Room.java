@@ -13,16 +13,15 @@ public class    Room {
     private String keyword;
     private String beschreibung;
     private long owner;
-    private long members;
+
 
     private List<Long> item;
 
-    public Room(long id, String roomName, String keyword, String beschreibung, long owner, long members, List<Long> item) {
+    public Room(long id, String roomName, String keyword, String beschreibung, long owner, List<Long> item) {
         this.id = id;
         this.roomName = roomName;
         this.keyword = keyword;
         this.owner = owner;
-        this.members = members;
         this.beschreibung = beschreibung;
         this.item = item;
     }
@@ -55,13 +54,6 @@ public class    Room {
         this.owner = owner;
     }
 
-    public long getMembers() {
-        return members;
-    }
-
-    public void setMembers(long members) {
-        this.members = members;
-    }
 
     public String getBeschreibung() {
         return beschreibung;
