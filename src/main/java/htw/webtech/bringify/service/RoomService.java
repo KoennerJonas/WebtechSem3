@@ -17,12 +17,12 @@ public class RoomService {
     //Datenbank, aus welcher man die Daten bekommt
     private final RoomRepository roomRepository;
     private final UserRepository userRepository;
-    private final ItemRepository itemRepositpry;
+    private final ItemRepository itemRepository;
 
     public RoomService(RoomRepository roomRepository, UserRepository userRepository, ItemRepository itemRepositpry) {
         this.roomRepository = roomRepository;
         this.userRepository = userRepository;
-        this.itemRepositpry = itemRepositpry;
+        this.itemRepository = itemRepositpry;
     }
 
     public List<Room> findAll() {
@@ -61,7 +61,7 @@ public class RoomService {
         var roomEntity = entityOtionalEmpty.get();
         List<ItemEntity> items = new ArrayList();
         for (Long i: request.getItems()){
-            items.add(itemRepositpry.findById(i).get());
+            items.add(itemRepository.findById(i).get());
         }
 
         roomEntity.setRoomName(request.getRoomName());
@@ -85,7 +85,7 @@ public class RoomService {
         itemList.add(itemEntity);
 
         room.setItems(itemList);
-        itemRepositpry.save(itemEntity);
+        itemRepository.save(itemEntity);
         roomRepository.save(room);
         System.out.println(room.getItems().get(0).getName());
     }
@@ -98,6 +98,22 @@ public class RoomService {
             itemList.add(new Item(i.getName(),i.getAmmount(),i.getRoom().getId()));
         }
         return itemList;
+    }
+
+    public void deleteItemFromRoom(Long roomId, Long itemId){
+        var roomEntity = roomRepository.findById(roomId).get();
+        var roomItemList = roomEntity.getItems();
+        var roomitem = itemRepository.findById(itemId).get();
+
+        roomItemList.remove(roomitem);
+
+
+        System.out.println(roomitem.getName());
+        System.out.println(roomitem.getAmmount());
+        System.out.println(roomitem.getRoom().getId());
+
+        roomEntity.setItems(roomItemList);
+        roomRepository.save(roomEntity);
     }
 
     public List<User> getAllUserFromRoom(Long raumId){
