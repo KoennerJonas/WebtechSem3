@@ -39,7 +39,7 @@ public class RoomService {
 
     //room wird zurückgesendet, da wir die von der Datenbank erstellte ID haben wollen
     public Room createRoom(RoomManipulationRequest request) {
-        var roomEntity = new RoomEntity(request.getRoomName(), request.getKeyword(),request.getBeschreibung(), request.getOwner(), request.getMembers(), request.getItems());
+        var roomEntity = new RoomEntity(request.getRoomName(), request.getKeyword(),request.getBeschreibung(), request.getOwner(), request.getItems());
         roomEntity = roomRepository.save(roomEntity);
         return roomEntityToRoom(roomEntity);
     }
@@ -67,7 +67,6 @@ public class RoomService {
         roomEntity.setRoomName(request.getRoomName());
         roomEntity.setKeyword(request.getKeyword());
         roomEntity.setOwner(request.getOwner());
-        roomEntity.setMembers(request.getMembers());
         roomEntity.setItems(items);
 
         //da mit roomRepository.findById(id) eine Entität mit ID von der Datenbank zurückgegeben wird und diese ID beibehalten wird,
@@ -105,8 +104,8 @@ public class RoomService {
         var roomItemList = roomEntity.getItems();
         var roomitem = itemRepository.findById(itemId).get();
 
+        itemRepository.deleteById(roomitem.getId());
         roomItemList.remove(roomitem);
-
 
         System.out.println(roomitem.getName());
         System.out.println(roomitem.getAmmount());
@@ -141,7 +140,6 @@ public class RoomService {
                 roomEntity.getKeyword(),
                 roomEntity.getBeschreibung(),
                 roomEntity.getOwner(),
-                roomEntity.getMembers(),
                 items);
     }
 

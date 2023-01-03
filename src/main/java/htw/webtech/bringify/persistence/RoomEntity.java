@@ -29,8 +29,6 @@ public class RoomEntity {
     private String beschreibung;
     @Column(name = "owner", nullable = false)
     private long owner;
-    @Column(name = "members", nullable = true)
-    private long members;
 
     @OneToMany(fetch = FetchType.EAGER)
     private List<ItemEntity> items = new ArrayList<>();
@@ -44,11 +42,10 @@ public class RoomEntity {
     )
     private Set<UserEntity> users = new HashSet<>();
 
-    public RoomEntity(String roomName, String keyword, String beschreibung, long owner, long members, List items) {
+    public RoomEntity(String roomName, String keyword, String beschreibung, long owner,  List items) {
         this.roomName = roomName;
         this.keyword = keyword;
         this.owner = owner;
-        this.members = members;
         this.items = items;
         this.beschreibung = beschreibung;
     }
@@ -87,13 +84,6 @@ public class RoomEntity {
         this.owner = owner;
     }
 
-    public long getMembers() {
-        return members;
-    }
-
-    public void setMembers(long members) {
-        this.members = members;
-    }
 
     public List<ItemEntity> getItems() {
         return items;
