@@ -99,17 +99,24 @@ public class RoomService {
         return itemList;
     }
 
+    public void deleteUserFromRoom(Long roomId, Long userId){
+        var roomEntity = roomRepository.findById(roomId).get();
+        var userEntity = userRepository.findById(userId).get();
+        var userSet = roomEntity.getUsers();
+
+        userSet.remove(userEntity);
+
+        roomEntity.setUsers(userSet);
+        roomRepository.save(roomEntity);
+    }
+
     public void deleteItemFromRoom(Long roomId, Long itemId){
         var roomEntity = roomRepository.findById(roomId).get();
         var roomItemList = roomEntity.getItems();
         var roomitem = itemRepository.findById(itemId).get();
 
-        itemRepository.deleteById(roomitem.getId());
+        //itemRepository.deleteById(roomitem.getId());
         roomItemList.remove(roomitem);
-
-        System.out.println(roomitem.getName());
-        System.out.println(roomitem.getAmmount());
-        System.out.println(roomitem.getRoom().getId());
 
         roomEntity.setItems(roomItemList);
         roomRepository.save(roomEntity);

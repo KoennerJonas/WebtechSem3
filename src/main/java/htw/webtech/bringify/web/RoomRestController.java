@@ -64,9 +64,14 @@ public class RoomRestController {
         return items != null? ResponseEntity.ok(items):ResponseEntity.notFound().build();
     }
 
-    @PostMapping(path = "/api/v1/rooms/items/{rid}/{iid}")
+    @DeleteMapping(path = "/api/v1/rooms/items/{rid}/{iid}")
     public  ResponseEntity<Void> removeItemFromRoom(@PathVariable Long rid, @PathVariable Long iid){
         roomService.deleteItemFromRoom(rid,iid);
+        return ResponseEntity.ok().build();
+    }
+    @DeleteMapping(path = "/api/v1/rooms/user/{rid}/{uid}")
+    public ResponseEntity<Void> removeUserFromRoom(@PathVariable Long rid, @PathVariable Long uid){
+        roomService.deleteUserFromRoom(rid,uid);
         return ResponseEntity.ok().build();
     }
 

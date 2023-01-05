@@ -8,6 +8,7 @@ import org.assertj.core.api.WithAssertions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
@@ -23,6 +24,8 @@ public class RoomServiceTest implements WithAssertions {
     @Mock
     private ItemRepository itemRepository;
 
+    @InjectMocks
+    private RoomService RoomService;
     @Test
     @DisplayName("should return all rooms that exists")
     void should_return_all_rooms(){
