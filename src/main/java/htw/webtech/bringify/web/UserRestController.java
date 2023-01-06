@@ -94,7 +94,6 @@ public class UserRestController {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Email not verified");
         }
         JwtResponse res = userService.login(signInRequest);
-        System.out.println(res.getToken());
         return ResponseEntity.ok(res);
     }
     @PostMapping("/api/v1/signup")
