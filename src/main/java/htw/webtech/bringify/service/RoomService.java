@@ -5,6 +5,7 @@ import htw.webtech.bringify.web.api.Item;
 import htw.webtech.bringify.web.api.Room;
 import htw.webtech.bringify.web.api.RoomManipulationRequest;
 import htw.webtech.bringify.web.api.User;
+import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;

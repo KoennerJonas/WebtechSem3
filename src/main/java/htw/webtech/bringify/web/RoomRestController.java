@@ -1,6 +1,7 @@
 package htw.webtech.bringify.web;
 
 import htw.webtech.bringify.service.RoomService;
+import htw.webtech.bringify.service.UserService;
 import htw.webtech.bringify.web.api.Item;
 import htw.webtech.bringify.web.api.Room;
 import htw.webtech.bringify.web.api.RoomManipulationRequest;
@@ -8,7 +9,6 @@ import htw.webtech.bringify.web.api.User;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.List;
 
@@ -16,9 +16,11 @@ import java.util.List;
 public class RoomRestController {
 
     private final RoomService roomService;
+    private final UserService userService;
 
-    public RoomRestController(RoomService roomService) {
+    public RoomRestController(RoomService roomService, UserService userService) {
         this.roomService = roomService;
+        this.userService = userService;
     }
 
 
@@ -92,5 +94,18 @@ public class RoomRestController {
         boolean success = roomService.addUserToRoom(roomid,userid);
         return success ? ResponseEntity.ok().build() : ResponseEntity.notFound().build();
     }
+    /*
+    @PostMapping("/api/v1/user_room")
+    public ResponseEntity<List<String>> getRoomNamesFromUser(@RequestBody Long userId){
+        var roomList = userService.getAllRoomNamesFromUser(userId);
+        return roomList != null? ResponseEntity.ok(roomList):ResponseEntity.notFound().build();
+    }*/
+    @GetMapping("/api/v1/user_room/{id}")
+    public ResponseEntity<List<String>> getRoomNamesFromUser1(@PathVariable Long id){
+        var roomList = userService.getAllRoomNamesFromUser(id);
+        return roomList != null? ResponseEntity.ok(roomList):ResponseEntity.notFound().build();
+    }
+
+
 
 }

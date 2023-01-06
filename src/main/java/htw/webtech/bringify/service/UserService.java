@@ -9,10 +9,10 @@ import htw.webtech.bringify.security.jwt.UserDetailsImpl;
 import htw.webtech.bringify.security.jwt.dto.JwtResponse;
 import htw.webtech.bringify.security.jwt.dto.SignInRequest;
 import htw.webtech.bringify.web.api.ResetPasswordRequest;
+import htw.webtech.bringify.web.api.Room;
 import htw.webtech.bringify.web.api.User;
 import htw.webtech.bringify.web.api.UserManipulationRequest;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
@@ -24,7 +24,9 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
@@ -37,12 +39,13 @@ public class UserService implements UserDetailsService {
     private final ResetTokenRepository resetTokenRepository;
     private final ConfirmationTokenRepository confirmationTokenRepository;
     private final EmailSender emailSender;
-
+    private final RoomRepository roomRepository;
+    private final RoomService roomService;
     private AuthenticationManager authenticationManager;
     private JwtUtil jwtUtil;
     private final EmailTempConfirm emailTempConfirm = new EmailTempConfirm();
     private final EmailTempReset emailTempReset = new EmailTempReset();
-    public UserService(UserRepository userRepository, BCryptPasswordEncoder bCryptPasswordEncoder, ConfirmationTokenService confirmationTokenService, ResetTokenService resetTokenService, ResetTokenRepository resetTokenRepository, ConfirmationTokenRepository confirmationTokenRepository, EmailSender emailSender, JwtUtil jwtUtil, AuthenticationManager authenticationManager) {
+    public UserService(UserRepository userRepository, BCryptPasswordEncoder bCryptPasswordEncoder, ConfirmationTokenService confirmationTokenService, ResetTokenService resetTokenService, ResetTokenRepository resetTokenRepository, ConfirmationTokenRepository confirmationTokenRepository, EmailSender emailSender, RoomRepository roomRepository, RoomService roomService, JwtUtil jwtUtil, AuthenticationManager authenticationManager) {
         this.userRepository = userRepository;
         this.bCryptPasswordEncoder = bCryptPasswordEncoder;
         this.confirmationTokenService = confirmationTokenService;
@@ -50,6 +53,8 @@ public class UserService implements UserDetailsService {
         this.resetTokenRepository = resetTokenRepository;
         this.confirmationTokenRepository = confirmationTokenRepository;
         this.emailSender = emailSender;
+        this.roomRepository = roomRepository;
+        this.roomService = roomService;
         this.jwtUtil = jwtUtil;
         this.authenticationManager = authenticationManager;
     }
@@ -167,6 +172,20 @@ public class UserService implements UserDetailsService {
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
         UserEntity user = userRepository.findByUsername(username).orElseThrow(() -> new UsernameNotFoundException("User not found with username" + username));
         return UserDetailsImpl.build(user);
+    }
+    public List<String> getAllRoomNamesFromUser(Long userId){
+        List<String> roomList = new ArrayList<>();
+        List<RoomEntity> roomEntityList = roomRepository.findAll();
+        for(RoomEntity i: roomEntityList){
+            Set<UserEntity> userList = i.getUsers();
+            for(UserEntity u:userList){
+                if(u.getId() == userId){
+                    roomList.add(i.getRoomName());
+                }
+            }
+        }
+        return roomList;
+
     }
 
 
