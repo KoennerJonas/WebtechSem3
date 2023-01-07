@@ -12,11 +12,10 @@ public class RoomManipulationRequest {
     private long members;
     private List<Long> items;
 
-    public RoomManipulationRequest(String roomName, String keyword, String beschreibung, long owner, long members, List<Long> items) {
+    public RoomManipulationRequest(String roomName, String keyword, String beschreibung, long owner, List<Long> items) {
         this.roomName = roomName;
         this.keyword = keyword;
         this.owner = owner;
-        this.members = members;
         this.items = items;
         this.beschreibung = beschreibung;
     }
