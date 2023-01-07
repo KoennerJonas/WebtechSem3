@@ -1,10 +1,7 @@
 package htw.webtech.bringify.service;
 
 import htw.webtech.bringify.persistence.*;
-import htw.webtech.bringify.web.api.Item;
-import htw.webtech.bringify.web.api.Room;
-import htw.webtech.bringify.web.api.RoomManipulationRequest;
-import htw.webtech.bringify.web.api.User;
+import htw.webtech.bringify.web.api.*;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Service;
 
@@ -167,5 +164,16 @@ public class RoomService {
         room.setUsers(userlist);
         roomRepository.save(room);
         return true;
+    }
+    public void saveDescription(Long id, Description description){
+        roomRepository.saveDescription(description.getDescription(),id);
+    }
+    public Description getDescription(Long id){
+        RoomEntity roomEntity = roomRepository.findById(id).get();
+        Room room = roomEntityToRoom(roomEntity);
+        if(room.getBeschreibung() ==null){
+            return new Description("");
+        }
+        return new Description(room.getBeschreibung());
     }
 }

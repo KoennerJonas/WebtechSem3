@@ -1,5 +1,8 @@
 package htw.webtech.bringify.persistence;
 
+import org.hibernate.annotations.OnDelete;
+import org.hibernate.annotations.OnDeleteAction;
+
 import javax.persistence.*;
 
 @Entity(name = "Item")
@@ -16,8 +19,11 @@ public class ItemEntity {
     @Column(name = "ammount")
     private int ammount;
 
+
     @ManyToOne(cascade = CascadeType.MERGE)
+    @OnDelete(action = OnDeleteAction.CASCADE)
     @JoinColumn(name = "raum_id", referencedColumnName = "id")
+
     private RoomEntity room;
 
     public ItemEntity(String name, int ammount, RoomEntity room) {
