@@ -2,10 +2,7 @@ package htw.webtech.bringify.web;
 
 import htw.webtech.bringify.service.RoomService;
 import htw.webtech.bringify.service.UserService;
-import htw.webtech.bringify.web.api.Item;
-import htw.webtech.bringify.web.api.Room;
-import htw.webtech.bringify.web.api.RoomManipulationRequest;
-import htw.webtech.bringify.web.api.User;
+import htw.webtech.bringify.web.api.*;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -106,6 +103,13 @@ public class RoomRestController {
         return roomList != null? ResponseEntity.ok(roomList):ResponseEntity.notFound().build();
     }
 
-
-
+    @PutMapping("/api/v1/description/{id}")
+    public ResponseEntity<Void> saveDescription(@PathVariable Long id, @RequestBody Description description){
+        roomService.saveDescription(id,description);
+        return ResponseEntity.ok().build();
+    }
+    @GetMapping("/api/v1/description/{id}")
+    public ResponseEntity<Description> getDescription (@PathVariable Long id){
+        return ResponseEntity.ok(roomService.getDescription(id));
+    }
 }
