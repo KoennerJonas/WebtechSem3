@@ -2,10 +2,7 @@ package htw.webtech.bringify.service;
 
 import com.sun.xml.bind.v2.TODO;
 import htw.webtech.bringify.persistence.*;
-import htw.webtech.bringify.web.api.Item;
-import htw.webtech.bringify.web.api.Room;
-import htw.webtech.bringify.web.api.RoomManipulationRequest;
-import htw.webtech.bringify.web.api.User;
+import htw.webtech.bringify.web.api.*;
 import org.assertj.core.api.WithAssertions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -91,8 +88,8 @@ public class RoomServiceTest implements WithAssertions {
         Long raumIdGiven = 1L;
 
         List<ItemEntity> itemEntityList = new ArrayList<>();
-        itemEntityList.add(new ItemEntity("Banane", 2, new RoomEntity("Raum", "1234", "Beschreibung", 1, null)));
-        itemEntityList.add(new ItemEntity("Kirsche", 2, new RoomEntity("Raum", "1234", "Beschreibung", 1, null)));
+        itemEntityList.add(new ItemEntity("Banane", 2, new RoomEntity("Raum", "1234", "Beschreibung", 1, null,null),null));
+        itemEntityList.add(new ItemEntity("Kirsche", 2, new RoomEntity("Raum", "1234", "Beschreibung", 1, null,null),null));
 
         var roomEntityGiven = Mockito.mock(RoomEntity.class);
         doReturn(itemEntityList).when(roomEntityGiven).getItems();
@@ -101,8 +98,8 @@ public class RoomServiceTest implements WithAssertions {
 
 
         List<Item> expected = new ArrayList<>();
-        expected.add(new Item("Banane", 2, 1L));
-        expected.add(new Item("Kirsche", 2, 1L));
+        expected.add(new Item(1L,"Banane", 2, 1L,"Peter"));
+        expected.add(new Item(2L,"Kirsche", 2, 1L,"Paul"));
 
         //when
         var result = roomService.getAllItemsFromRoom(raumIdGiven);
@@ -149,7 +146,7 @@ public class RoomServiceTest implements WithAssertions {
     void should_find_room_by_id(){
         //given
         Long givenId = 1L;
-        Optional<RoomEntity> room = Optional.of(new RoomEntity("raum1", "1234", "beschreibung", 1, null));
+        Optional<RoomEntity> room = Optional.of(new RoomEntity("raum1", "1234", "beschreibung", 1, null,null));
         doReturn(room).when(roomRepository).findById(givenId);
 
         Room expectedRoom = new Room(1,"raum1","1234","beschreibung",1,null);
@@ -168,8 +165,8 @@ public class RoomServiceTest implements WithAssertions {
     @DisplayName("should create a new room from request")
     void should_ceate_a_new_room(){
         //given
-        RoomManipulationRequest roomManipulationRequest = new RoomManipulationRequest("Raum1", "1234", "beschreibung", 1, null);
-        RoomEntity repoSave = new RoomEntity("Raum1","1234","beschreibung",1,null);
+        RoomManipulationRequest roomManipulationRequest = new RoomManipulationRequest("Raum1", "1234", "beschreibung", 1, null,null);
+        RoomEntity repoSave = new RoomEntity("Raum1","1234","beschreibung",1,null,null);
         Room expectedRoom = new Room(1,"Raum1","1234","beschreibung",1,null);
 
         doReturn(repoSave).when(roomRepository).save(repoSave);
@@ -227,7 +224,7 @@ public class RoomServiceTest implements WithAssertions {
     void add_user_to_room(){
         //given
         Long roomIdGiven = 1L;
-        Long userIdGiven = 1L;
+        Username usernameGiven = new Username("Tom");
 
         Set<UserEntity> userEntityList = new HashSet<>();
         userEntityList.add(new UserEntity("Tom", "tom@gmx.de", "1234"));
@@ -242,14 +239,14 @@ public class RoomServiceTest implements WithAssertions {
         //doReturn(null).when(userRepository).findById(roomIdGiven);
 
         Optional<UserEntity> userOptional = Optional.of(new UserEntity("Tom2", "tom2@gmx.de", "1234"));
-        doReturn(userOptional).when(userRepository).findById(userIdGiven);
+        doReturn(userOptional).when(userRepository).findByUsername(usernameGiven.getUsername());
 
-        RoomEntity roomEntity = new RoomEntity("Room", "1234", "Beschreibung", 1L, null);
+        RoomEntity roomEntity = new RoomEntity("Room", "1234", "Beschreibung", 1L, null,null);
 
 
 
         //when
-        var result = roomService.addUserToRoom(roomIdGiven,userIdGiven);
+        var result = roomService.addUserToRoom(roomIdGiven, usernameGiven);
 
         //then
         assertThat(result).isFalse();
@@ -261,12 +258,12 @@ public class RoomServiceTest implements WithAssertions {
 
         List<Long> items = new ArrayList<>();
         items.add(1L);
-        RoomManipulationRequest roomManipulationRequestGiven = new RoomManipulationRequest("Raum geaendert", "1234", "Beschreibung", 1L, items);
+        RoomManipulationRequest roomManipulationRequestGiven = new RoomManipulationRequest("Raum geaendert", "1234", "Beschreibung", 1L, items,null);
 
-        ItemEntity itemEntity = new ItemEntity("Bananen", 2,new RoomEntity("test", "1234", "Beschreibung", 1L,null ));
+        ItemEntity itemEntity = new ItemEntity("Bananen", 2, new RoomEntity("test", "1234", "Beschreibung", 1L,null ,null),null);
         doReturn(itemEntity).when(itemRepository.findById(1L));
 
-        Optional<RoomEntity> roomEntity = Optional.of(new RoomEntity("alter Raumname", "12", "Beschreibung", 1L,null));
+        Optional<RoomEntity> roomEntity = Optional.of(new RoomEntity("alter Raumname", "12", "Beschreibung", 1L,null,null));
         doReturn(roomEntity).when(roomRepository).findById(roomIdGiven);
 
         /*
@@ -332,7 +329,7 @@ public class RoomServiceTest implements WithAssertions {
     @DisplayName("should create a room with manipulationRequest")
     void get_description(){
         Long givenId = 1L;
-        RoomEntity room = new RoomEntity("Raum", "1234", "Beschreibung", 1L, null);
+        RoomEntity room = new RoomEntity("Raum", "1234", "Beschreibung", 1L, null,null);
         doReturn(Optional.of(room)).when(roomRepository).findById(givenId);
 
         //when

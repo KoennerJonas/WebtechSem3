@@ -52,7 +52,7 @@ public class RoomRestController {
     }
 
     @PutMapping(path = "/api/v1/rooms/additems")
-    public ResponseEntity<Void> addItem(@RequestBody Item item){
+    public ResponseEntity<Void> addItem(@RequestBody ItemManipulationRequest item){
     roomService.addItemToRoom(item);
     return ResponseEntity.ok().build();
     }
@@ -86,9 +86,9 @@ public class RoomRestController {
         return roomFound ? ResponseEntity.ok().build(): ResponseEntity.notFound().build();
     }
 
-    @PutMapping(path = "/api/v1/{roomid}/users/{userid}")
-    public ResponseEntity<Void> enroledUser(@PathVariable Long roomid, @PathVariable Long userid){
-        boolean success = roomService.addUserToRoom(roomid,userid);
+    @PutMapping(path = "/api/v1/add_user/{roomid}")
+    public ResponseEntity<Void> enroledUser(@PathVariable Long roomid, @RequestBody Username username){
+        boolean success = roomService.addUserToRoom(roomid,username);
         return success ? ResponseEntity.ok().build() : ResponseEntity.notFound().build();
     }
     /*
@@ -98,7 +98,7 @@ public class RoomRestController {
         return roomList != null? ResponseEntity.ok(roomList):ResponseEntity.notFound().build();
     }*/
     @GetMapping("/api/v1/user_room/{id}")
-    public ResponseEntity<List<String>> getRoomNamesFromUser1(@PathVariable Long id){
+    public ResponseEntity<List<Room>> getRooms(@PathVariable Long id){
         var roomList = userService.getAllRoomNamesFromUser(id);
         return roomList != null? ResponseEntity.ok(roomList):ResponseEntity.notFound().build();
     }
@@ -110,6 +110,17 @@ public class RoomRestController {
     }
     @GetMapping("/api/v1/description/{id}")
     public ResponseEntity<Description> getDescription (@PathVariable Long id){
-        return ResponseEntity.ok(roomService.getDescription(id));
+        return roomService.getDescription(id) != null? ResponseEntity.ok(roomService.getDescription(id)):ResponseEntity.notFound().build();
     }
+
+    @GetMapping("/api/v1/username_item/{itemId}/{userId}")
+    public ResponseEntity<Username> setUsernameToItem(@PathVariable Long itemId, @PathVariable Long userId){
+       Username username= userService.setUsernameToItem(itemId,userId);
+        return username != null? ResponseEntity.ok(username):ResponseEntity.notFound().build();
+    }
+    @GetMapping("/api/v1/room_name/{roomId}")
+    public ResponseEntity<RoomName> getRoomName(@PathVariable Long roomId){
+        return ResponseEntity.ok(roomService.getRoomName(roomId));
+    }
+
 }

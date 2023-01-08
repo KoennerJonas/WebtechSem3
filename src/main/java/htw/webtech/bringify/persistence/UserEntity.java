@@ -32,6 +32,7 @@ public class UserEntity implements UserDetails {
     @Column(nullable = true)
     private boolean enabled = false;
 
+
     @ManyToMany(fetch = FetchType.EAGER)
     @JoinTable(name = "users_to_roles",
             joinColumns = @JoinColumn(name="user_id"),

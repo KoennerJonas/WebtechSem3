@@ -19,6 +19,7 @@ public class ItemEntity {
     @Column(name = "ammount")
     private int ammount;
 
+    private String username;
 
     @ManyToOne(cascade = CascadeType.MERGE)
     @OnDelete(action = OnDeleteAction.CASCADE)
@@ -26,10 +27,11 @@ public class ItemEntity {
 
     private RoomEntity room;
 
-    public ItemEntity(String name, int ammount, RoomEntity room) {
+    public ItemEntity(String name, int ammount, RoomEntity room, String username) {
         this.name = name;
         this.ammount = ammount;
         this.room = room;
+        this.username = username;
     }
 
     public ItemEntity() {
@@ -64,5 +66,13 @@ public class ItemEntity {
 
     public void setRoom(RoomEntity room) {
         this.room = room;
+    }
+
+    public String getUsername() {
+        return username;
+    }
+
+    public void setUsername(String username) {
+        this.username = username;
     }
 }

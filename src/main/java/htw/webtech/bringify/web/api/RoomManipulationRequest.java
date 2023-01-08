@@ -1,6 +1,9 @@
 package htw.webtech.bringify.web.api;
 
+import htw.webtech.bringify.persistence.UserEntity;
+
 import java.util.List;
+import java.util.Set;
 
 public class RoomManipulationRequest {
     //gleiche Klasse wie Room, bloß ohne id, da diese in der Datenbank erzeugt wird
@@ -11,13 +14,15 @@ public class RoomManipulationRequest {
     private long owner;
     private long members;
     private List<Long> items;
+    private Set<UserEntity> users;
 
-    public RoomManipulationRequest(String roomName, String keyword, String beschreibung, long owner, List<Long> items) {
+    public RoomManipulationRequest(String roomName, String keyword, String beschreibung, long owner, List<Long> items, Set<UserEntity> users) {
         this.roomName = roomName;
         this.keyword = keyword;
         this.owner = owner;
         this.items = items;
         this.beschreibung = beschreibung;
+        this.users = users;
     }
 
     public RoomManipulationRequest(){}
@@ -68,5 +73,13 @@ public class RoomManipulationRequest {
 
     public void setBeschreibung(String beschreibung) {
         this.beschreibung = beschreibung;
+    }
+
+    public Set<UserEntity> getUsers() {
+        return users;
+    }
+
+    public void setUsers(Set<UserEntity> users) {
+        this.users = users;
     }
 }

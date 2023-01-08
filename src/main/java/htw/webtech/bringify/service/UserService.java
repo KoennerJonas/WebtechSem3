@@ -8,10 +8,7 @@ import htw.webtech.bringify.security.jwt.JwtUtil;
 import htw.webtech.bringify.security.jwt.UserDetailsImpl;
 import htw.webtech.bringify.security.jwt.dto.JwtResponse;
 import htw.webtech.bringify.security.jwt.dto.SignInRequest;
-import htw.webtech.bringify.web.api.ResetPasswordRequest;
-import htw.webtech.bringify.web.api.Room;
-import htw.webtech.bringify.web.api.User;
-import htw.webtech.bringify.web.api.UserManipulationRequest;
+import htw.webtech.bringify.web.api.*;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -33,6 +30,7 @@ import java.util.stream.Collectors;
 @Service
 public class UserService implements UserDetailsService {
     private UserRepository userRepository;
+    private ItemRepository itemRepository;
     private BCryptPasswordEncoder bCryptPasswordEncoder;
     private final ConfirmationTokenService confirmationTokenService;
     private final ResetTokenService resetTokenService;
@@ -45,7 +43,7 @@ public class UserService implements UserDetailsService {
     private JwtUtil jwtUtil;
     private final EmailTempConfirm emailTempConfirm = new EmailTempConfirm();
     private final EmailTempReset emailTempReset = new EmailTempReset();
-    public UserService(UserRepository userRepository, BCryptPasswordEncoder bCryptPasswordEncoder, ConfirmationTokenService confirmationTokenService, ResetTokenService resetTokenService, ResetTokenRepository resetTokenRepository, ConfirmationTokenRepository confirmationTokenRepository, EmailSender emailSender, RoomRepository roomRepository, RoomService roomService, JwtUtil jwtUtil, AuthenticationManager authenticationManager) {
+    public UserService( ItemRepository itemRepository,UserRepository userRepository, BCryptPasswordEncoder bCryptPasswordEncoder, ConfirmationTokenService confirmationTokenService, ResetTokenService resetTokenService, ResetTokenRepository resetTokenRepository, ConfirmationTokenRepository confirmationTokenRepository, EmailSender emailSender, RoomRepository roomRepository, RoomService roomService, JwtUtil jwtUtil, AuthenticationManager authenticationManager) {
         this.userRepository = userRepository;
         this.bCryptPasswordEncoder = bCryptPasswordEncoder;
         this.confirmationTokenService = confirmationTokenService;
@@ -57,6 +55,7 @@ public class UserService implements UserDetailsService {
         this.roomService = roomService;
         this.jwtUtil = jwtUtil;
         this.authenticationManager = authenticationManager;
+        this.itemRepository = itemRepository;
     }
 
     public List<User> findAll(){
@@ -111,7 +110,7 @@ public class UserService implements UserDetailsService {
         userEntity.setUsername(request.getUsername());
         userEntity.setPassword(request.getPassword());
 
-        userEntity = userRepository.save(userEntity);
+        userRepository.save(userEntity);
         return transformEntity(userEntity);
     }
 
@@ -174,20 +173,28 @@ public class UserService implements UserDetailsService {
         UserEntity user = userRepository.findByUsername(username).orElseThrow(() -> new UsernameNotFoundException("User not found with username" + username));
         return UserDetailsImpl.build(user);
     }
-    public List<String> getAllRoomNamesFromUser(Long userId){
-        List<String> roomList = new ArrayList<>();
+    public List<Room> getAllRoomNamesFromUser(Long userId){
+        List<Room> roomList = new ArrayList<>();
         List<RoomEntity> roomEntityList = roomRepository.findAll();
         for(RoomEntity i: roomEntityList){
             Set<UserEntity> userList = i.getUsers();
             for(UserEntity u:userList){
                 if(u.getId() == userId){
-                    roomList.add(i.getRoomName());
+                    roomList.add(roomService.roomEntityToRoom(i));
                 }
             }
         }
         return roomList;
 
     }
+
+    public Username setUsernameToItem(Long itemId, Long userId){
+        UserEntity userEntity = userRepository.findById(userId).get();
+        User user = transformEntity(userEntity);
+        itemRepository.addUsername(user.getUsername(),itemId);
+        return new Username(user.getUsername());
+    }
+
 
 
 }

@@ -23,7 +23,7 @@ public class RoomEntity {
     @Column(name = "room_name", nullable = false)
     private String roomName;
 
-    @Column(name = "keyword", nullable = false)
+    @Column(name = "keyword", nullable = true)
     private String keyword;
     @Column(name = "beschreibung", nullable = true)
     private String beschreibung;
@@ -42,12 +42,13 @@ public class RoomEntity {
     )
     private Set<UserEntity> users = new HashSet<>();
 
-    public RoomEntity(String roomName, String keyword, String beschreibung, long owner,  List items) {
+    public RoomEntity(String roomName, String keyword, String beschreibung, long owner,  List items,Set<UserEntity> users) {
         this.roomName = roomName;
         this.keyword = keyword;
         this.owner = owner;
         this.items = items;
         this.beschreibung = beschreibung;
+        this.users = users;
     }
 
     protected RoomEntity() {

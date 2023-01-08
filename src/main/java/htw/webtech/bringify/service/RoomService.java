@@ -2,10 +2,10 @@ package htw.webtech.bringify.service;
 
 import htw.webtech.bringify.persistence.*;
 import htw.webtech.bringify.web.api.*;
-import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -17,10 +17,13 @@ public class RoomService {
     private final UserRepository userRepository;
     private final ItemRepository itemRepository;
 
-    public RoomService(RoomRepository roomRepository, UserRepository userRepository, ItemRepository itemRepositpry) {
+
+
+    public RoomService(RoomRepository roomRepository, UserRepository userRepository, ItemRepository itemRepository) {
         this.roomRepository = roomRepository;
         this.userRepository = userRepository;
-        this.itemRepository = itemRepositpry;
+        this.itemRepository = itemRepository;
+
     }
 
     public List<Room> findAll() {
@@ -37,7 +40,10 @@ public class RoomService {
 
     //room wird zurückgesendet, da wir die von der Datenbank erstellte ID haben wollen
     public Room createRoom(RoomManipulationRequest request) {
-        var roomEntity = new RoomEntity(request.getRoomName(), request.getKeyword(),request.getBeschreibung(), request.getOwner(), request.getItems());
+        Set<UserEntity> users = new HashSet<>();
+        users.add(userRepository.findById(request.getOwner()).get());
+        var roomEntity = new RoomEntity(request.getRoomName(), request.getKeyword(),request.getBeschreibung(), request.getOwner(), request.getItems(),users);
+
         roomEntity = roomRepository.save(roomEntity);
         return roomEntityToRoom(roomEntity);
     }
@@ -79,27 +85,27 @@ public class RoomService {
         return roomEntityToRoom(roomEntity);
     }
 
-    public void addItemToRoom(Item item ){
+    public void addItemToRoom(ItemManipulationRequest item ){
 
         var room = roomRepository.findById(item.getRaumid()).get();
         List<ItemEntity> itemList = room.getItems();
 
-        ItemEntity itemEntity = new ItemEntity(item.getName(),item.getAmmount(),room);
+        ItemEntity itemEntity = new ItemEntity(item.getName(),item.getAmmount(),room,null);
         itemList.add(itemEntity);
 
         room.setItems(itemList);
         itemRepository.save(itemEntity);
         roomRepository.save(room);
-        System.out.println(room.getItems().get(0).getName());
     }
 
     public List<Item> getAllItemsFromRoom(Long raumId){
 
-        var itemEntity = roomRepository.findById(raumId);
-        var itemEntityList = itemEntity.get().getItems();
+        var roomEntity = roomRepository.findById(raumId);
+        var itemEntityList = roomEntity.get().getItems();
         List<Item> itemList = new ArrayList<>();
         for(ItemEntity i : itemEntityList){
-            itemList.add(new Item(i.getName(),i.getAmmount(),i.getRoom().getId()));
+            itemList.add(new Item(i.getId(),i.getName(),i.getAmmount(),i.getRoom().getId(),i.getUsername()));
+
         }
         return itemList;
     }
@@ -147,19 +153,24 @@ public class RoomService {
             }
         }
 
-
-        return new Room(roomEntity.getId(),
+        Room room = new Room(roomEntity.getId(),
                 roomEntity.getRoomName(),
                 roomEntity.getKeyword(),
                 roomEntity.getBeschreibung(),
                 roomEntity.getOwner(),
                 items);
+        if(roomEntity.getUsers().isEmpty()&&roomEntity.getUsers() ==null ){
+            return room;
+        }else{
+            room.setUsers(roomEntity.getUsers());
+            return room;
+        }
     }
 
-    public Boolean addUserToRoom(Long roomid, Long userid) {
+    public Boolean addUserToRoom(Long roomid, Username username) {
 
         var roomOptional = roomRepository.findById(roomid);
-        var userOptional = userRepository.findById(userid);
+        var userOptional = userRepository.findByUsername(username.getUsername());
 
         if (roomOptional.isEmpty() || userOptional.isEmpty()) {
             return false;
@@ -185,4 +196,10 @@ public class RoomService {
         }
         return new Description(room.getBeschreibung());
     }
+    public RoomName getRoomName(Long id){
+        var roomEntity = roomRepository.findById(id).get();
+        Room room = roomEntityToRoom(roomEntity);
+        return new RoomName( room.getRoomName());
+    }
+
 }

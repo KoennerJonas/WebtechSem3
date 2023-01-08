@@ -1,10 +1,12 @@
 package htw.webtech.bringify.web.api;
 
+
+
 import java.util.List;
 
-public class Item {
+public class ItemManipulationRequest {
 
-    private Long id;
+
     private String name;
     private int ammount;
     private Long raumid;
@@ -12,21 +14,18 @@ public class Item {
     private String username;
 
 
-    public Item(Long id,String name, int ammount, Long raumid,String username) {
+    public ItemManipulationRequest(String name, int ammount, Long raumid,String username) {
         this.name = name;
         this.ammount = ammount;
         this.raumid = raumid;
         this.username =username;
-        this.id = id;
-    }
-
-    public Item() {
 
     }
 
-    public Long getId() {
-        return id;
+    public ItemManipulationRequest() {
+
     }
+
 
     public String getName() {
         return name;
@@ -60,3 +59,4 @@ public class Item {
         this.username = username;
     }
 }
+
