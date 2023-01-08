@@ -158,7 +158,7 @@ public class RoomService {
                 roomEntity.getBeschreibung(),
                 roomEntity.getOwner(),
                 items);
-        if(roomEntity.getUsers().isEmpty()&&roomEntity.getUsers() ==null ){
+        if(roomEntity.getUsers() ==null || roomEntity.getUsers().isEmpty() ){
             return room;
         }else{
             room.setUsers(roomEntity.getUsers());

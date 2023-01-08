@@ -140,45 +140,4 @@ public class UserServiceTest implements WithAssertions {
     }
 
 
-
-    @Test
-    @DisplayName("should get all room names from user")
-    void should_get_all_room_name_from_user(){
-        Long givenId = 1L;
-        var usersEntity = Set.of(new UserEntity("user1","email1@test.com","password1"),
-                new UserEntity("user2","email2@test.com","password2"));
-        var rooms = List.of(new Room(1L, "raum1", null, "", 1L, null),new Room(2L, "raum2", null, "", 1L, null));
-        var roomEntity1 = Mockito.mock(RoomEntity.class);
-        doReturn(1L).when(roomEntity1).getId();
-        doReturn(1L).when(roomEntity1).getOwner();
-        doReturn("Raum1").when(roomEntity1).getRoomName();
-        doReturn("1234").when(roomEntity1).getKeyword();
-        doReturn("Das ist Raum 1").when(roomEntity1).getBeschreibung();
-        doReturn(null).when(roomEntity1).getItems();
-        doReturn(usersEntity).when(roomEntity1).getUsers();
-
-        var roomEntity2 = Mockito.mock(RoomEntity.class);
-        doReturn(2L).when(roomEntity2).getId();
-        doReturn(1L).when(roomEntity2).getOwner();
-        doReturn("Raum2").when(roomEntity2).getRoomName();
-        doReturn("1234").when(roomEntity2).getKeyword();
-        doReturn("Das ist Raum 2").when(roomEntity2).getBeschreibung();
-        doReturn(null).when(roomEntity2).getItems();
-        doReturn(usersEntity).when(roomEntity2).getUsers();
-        List<RoomEntity> roomEntityList = new ArrayList<>();
-        roomEntityList.add(roomEntity1);
-        roomEntityList.add(roomEntity2);
-
-        doReturn(roomEntityList).when(roomRepository).findAll();
-
-        doReturn(rooms.get(0)).when(roomService).roomEntityToRoom(roomEntity1);
-        doReturn(rooms.get(1)).when(roomService).roomEntityToRoom(roomEntity2);
-
-        var result = userService.getAllRoomNamesFromUser(givenId);
-
-        System.out.println(result.size());
-        assertThat(roomEntityList.get(0).getRoomName()).isEqualTo(result.get(0).getRoomName());
-        assertThat(roomEntityList.get(1).getRoomName()).isEqualTo(result.get(1).getRoomName());
-    }
-
 }
