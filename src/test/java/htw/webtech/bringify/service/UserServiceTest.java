@@ -30,6 +30,9 @@ public class UserServiceTest implements WithAssertions {
     @InjectMocks
     private UserService userService;
 
+    @Mock
+    private RoomService roomService;
+
     @Test
     @DisplayName("should return all users")
     void should_return_all_users(){
@@ -136,20 +139,7 @@ public class UserServiceTest implements WithAssertions {
 
     }
 
-    @Test
-    @DisplayName("should load userDetails by username")
-    void should_load_userDetails_by_username(){
-        String givenUsername = "user";
-        var userEntity = Mockito.mock(UserEntity.class);
-        doReturn(1L).when(userEntity).getId();
-        doReturn("user").when(userEntity).getUsername();
-        doReturn("test@gmail.com").when(userEntity).getMail();
-        doReturn("password").when(userEntity).getPassword();
 
-        doReturn(userEntity).when(userRepository).findByUsername(givenUsername);
-
-        var result = userService.loadUserByUsername(givenUsername);
-    }
 
     @Test
     @DisplayName("should get all room names from user")
@@ -157,6 +147,7 @@ public class UserServiceTest implements WithAssertions {
         Long givenId = 1L;
         var usersEntity = Set.of(new UserEntity("user1","email1@test.com","password1"),
                 new UserEntity("user2","email2@test.com","password2"));
+        var rooms = List.of(new Room(1L, "raum1", null, "", 1L, null),new Room(2L, "raum2", null, "", 1L, null));
         var roomEntity1 = Mockito.mock(RoomEntity.class);
         doReturn(1L).when(roomEntity1).getId();
         doReturn(1L).when(roomEntity1).getOwner();
@@ -180,11 +171,14 @@ public class UserServiceTest implements WithAssertions {
 
         doReturn(roomEntityList).when(roomRepository).findAll();
 
+        doReturn(rooms.get(0)).when(roomService).roomEntityToRoom(roomEntity1);
+        doReturn(rooms.get(1)).when(roomService).roomEntityToRoom(roomEntity2);
 
         var result = userService.getAllRoomNamesFromUser(givenId);
 
-        assertThat(roomEntityList.get(0).getRoomName()).isEqualTo(result.get(0));
-        assertThat(roomEntityList.get(1).getRoomName()).isEqualTo(result.get(1));
+        System.out.println(result.size());
+        assertThat(roomEntityList.get(0).getRoomName()).isEqualTo(result.get(0).getRoomName());
+        assertThat(roomEntityList.get(1).getRoomName()).isEqualTo(result.get(1).getRoomName());
     }
 
 }
