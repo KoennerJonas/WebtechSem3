@@ -108,4 +108,5 @@ public class RoomEntity {
     public void setBeschreibung(String beschreibung) {
         this.beschreibung = beschreibung;
     }
+
 }

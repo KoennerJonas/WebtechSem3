@@ -111,6 +111,7 @@ public class UserService implements UserDetailsService {
         userEntity.setUsername(request.getUsername());
         userEntity.setPassword(request.getPassword());
 
+        userEntity = userRepository.save(userEntity);
         return transformEntity(userEntity);
     }
 

@@ -5,6 +5,7 @@ import htw.webtech.bringify.persistence.*;
 import htw.webtech.bringify.web.api.Item;
 import htw.webtech.bringify.web.api.Room;
 import htw.webtech.bringify.web.api.RoomManipulationRequest;
+import htw.webtech.bringify.web.api.User;
 import org.assertj.core.api.WithAssertions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -14,9 +15,7 @@ import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 
 import static org.mockito.Mockito.*;
 
@@ -32,7 +31,7 @@ public class RoomServiceTest implements WithAssertions {
 
     @InjectMocks
     private RoomService roomService;
-    /*
+
     @Test
     @DisplayName("should return all rooms that exists")
     void should_return_all_rooms(){
@@ -44,7 +43,7 @@ public class RoomServiceTest implements WithAssertions {
         doReturn("1234").when(roomEntity1).getKeyword();
         doReturn("Das ist Raum 1").when(roomEntity1).getBeschreibung();
         doReturn(null).when(roomEntity1).getItems();
-        doReturn(null).when(roomEntity1).getUsers();
+
 
         var roomEntity2 = Mockito.mock(RoomEntity.class);
         doReturn(2L).when(roomEntity2).getId();
@@ -53,7 +52,7 @@ public class RoomServiceTest implements WithAssertions {
         doReturn("1234").when(roomEntity2).getKeyword();
         doReturn("Das ist Raum 2").when(roomEntity2).getBeschreibung();
         doReturn(null).when(roomEntity2).getItems();
-        doReturn(null).when(roomEntity2).getUsers();
+
 
         List<RoomEntity> roomEntityList = new ArrayList<>();
         roomEntityList.add(roomEntity1);
@@ -61,8 +60,8 @@ public class RoomServiceTest implements WithAssertions {
 
         doReturn(roomEntityList).when(roomRepository).findAll();
 
-        Room room1 = new Room(1,"Raum1", "1234","Das ist Raum 1",1,null);
-        Room room2 = new Room(2,"Raum2", "1234","Das ist Raum 2",1,null);
+        Room room1 = new Room(1,"Raum1", "1234","Das ist Raum 1",1,new ArrayList<>());
+        Room room2 = new Room(2,"Raum2", "1234","Das ist Raum 2",1,new ArrayList<>());
         List<Room> roomListExpected = new ArrayList<>();
         roomListExpected.add(room1);
         roomListExpected.add(room2);
@@ -71,8 +70,80 @@ public class RoomServiceTest implements WithAssertions {
         List<Room> result = roomService.findAll();
 
         //then
+        assertThat(result.get(0).getId()).isEqualTo(room1.getId());
         assertThat(result.get(0).getRoomName()).isEqualTo(room1.getRoomName());
-    }*/
+        assertThat(result.get(0).getOwner()).isEqualTo(room1.getOwner());
+        assertThat(result.get(0).getBeschreibung()).isEqualTo(room1.getBeschreibung());
+        assertThat(result.get(0).getKeyword()).isEqualTo(room1.getKeyword());
+        assertThat(result.get(0).getItem()).isEqualTo(room1.getItem());
+
+        assertThat(result.get(1).getId()).isEqualTo(room2.getId());
+        assertThat(result.get(1).getRoomName()).isEqualTo(room2.getRoomName());
+        assertThat(result.get(1).getOwner()).isEqualTo(room2.getOwner());
+        assertThat(result.get(1).getBeschreibung()).isEqualTo(room2.getBeschreibung());
+        assertThat(result.get(1).getKeyword()).isEqualTo(room2.getKeyword());
+        assertThat(result.get(1).getItem()).isEqualTo(room2.getItem());
+    }
+    @Test
+    @DisplayName("should return all items from a room")
+    void get_all_items_from_room(){
+        //given
+        Long raumIdGiven = 1L;
+
+        List<ItemEntity> itemEntityList = new ArrayList<>();
+        itemEntityList.add(new ItemEntity("Banane", 2, new RoomEntity("Raum", "1234", "Beschreibung", 1, null)));
+        itemEntityList.add(new ItemEntity("Kirsche", 2, new RoomEntity("Raum", "1234", "Beschreibung", 1, null)));
+
+        var roomEntityGiven = Mockito.mock(RoomEntity.class);
+        doReturn(itemEntityList).when(roomEntityGiven).getItems();
+
+        doReturn(Optional.of(roomEntityGiven)).when(roomRepository).findById(raumIdGiven);
+
+
+        List<Item> expected = new ArrayList<>();
+        expected.add(new Item("Banane", 2, 1L));
+        expected.add(new Item("Kirsche", 2, 1L));
+
+        //when
+        var result = roomService.getAllItemsFromRoom(raumIdGiven);
+
+        //then
+        assertThat(result.get(0).getName()).isEqualTo(expected.get(0).getName());
+        assertThat(result.get(0).getAmmount()).isEqualTo(expected.get(0).getAmmount());
+        assertThat(result.get(1).getName()).isEqualTo(expected.get(1).getName());
+        assertThat(result.get(1).getAmmount()).isEqualTo(expected.get(1).getAmmount());
+
+    }
+    @Test
+    @DisplayName("should return user from room")
+    void get_all_user_from_room(){
+        Long raumIdGiven = 1L;
+
+        Set<UserEntity> userEntitySet = new HashSet<>();
+        userEntitySet.add(new UserEntity("Julia", "julia@gmx.de", "1234"));
+
+        var roomEntityGiven = Mockito.mock(RoomEntity.class);
+        doReturn(userEntitySet).when(roomEntityGiven).getUsers();
+
+        doReturn(Optional.of(roomEntityGiven)).when(roomRepository).findById(raumIdGiven);
+
+        List<User> expected = new ArrayList<>();
+        expected.add(new User(1L,"Julia", "julia@gmx.de", "1234"));
+
+
+
+        //when
+        var result = roomService.getAllUserFromRoom(raumIdGiven);
+
+        //then
+        assertThat(result.get(0).getUsername()).isEqualTo(expected.get(0).getUsername());
+        assertThat(result.get(0).getMail()).isEqualTo(expected.get(0).getMail());
+        assertThat(result.get(0).getPassword()).isEqualTo(expected.get(0).getPassword());
+
+
+
+
+    }
     @Test
     @DisplayName("should the Room wth the given Id")
     void should_find_room_by_id(){
@@ -128,36 +199,150 @@ public class RoomServiceTest implements WithAssertions {
         //verify(roomRepository).deleteById(givenId);
         assertThat(result).isTrue();
     }
-    @Test
-    @DisplayName("should update Room per manipulationRequest")
-    void update_room(){
 
-    }
+
     @Test
-    @DisplayName("should add Item to Room")
-    void add_items(){
+    @DisplayName("should convert a RoomEntity in a Room")
+    void roomEntity_to_Room(){
         //given
-        Item item = new Item("Kuchen", 3, 1L);
-        RoomEntity roomEntity = new RoomEntity("Raum1", "1234", "beschreibung", 1,null);
-        doReturn(roomEntity).when(roomRepository).findById(item.getRaumid()).get();
+        var roomEntityGiven = Mockito.mock(RoomEntity.class);
+        doReturn(1L).when(roomEntityGiven).getId();
+        doReturn("Raum").when(roomEntityGiven).getRoomName();
+        doReturn("1234").when(roomEntityGiven).getKeyword();
+        doReturn("Beschreibung").when(roomEntityGiven).getBeschreibung();
+        doReturn(1L).when(roomEntityGiven).getOwner();
+        doReturn(null).when(roomEntityGiven).getItems();
+
+
+        Room expected = new Room(1L, "Raum", "1234", "Beschreibung",1L,new ArrayList<>());
 
         //when
+        var result = roomService.roomEntityToRoom(roomEntityGiven);
+
+        //then
+        assertThat(result.getId()).isEqualTo(expected.getId());
+    }
+    @Test
+    @DisplayName("should return false if room not present")
+    void add_user_to_room(){
+        //given
+        Long roomIdGiven = 1L;
+        Long userIdGiven = 1L;
+
+        Set<UserEntity> userEntityList = new HashSet<>();
+        userEntityList.add(new UserEntity("Tom", "tom@gmx.de", "1234"));
+        //userEntityList.add(new UserEntity("Tom2", "tom2@gmx.de", "1234"));
+
+        var roomEntityGiven = Mockito.mock(RoomEntity.class);
+        //doReturn(userEntityList).when(roomEntityGiven).getUsers();
+
+
+
+        Optional<RoomEntity> roomOptional = Optional.of(roomEntityGiven);
+        //doReturn(null).when(userRepository).findById(roomIdGiven);
+
+        Optional<UserEntity> userOptional = Optional.of(new UserEntity("Tom2", "tom2@gmx.de", "1234"));
+        doReturn(userOptional).when(userRepository).findById(userIdGiven);
+
+        RoomEntity roomEntity = new RoomEntity("Room", "1234", "Beschreibung", 1L, null);
+
+
+
+        //when
+        var result = roomService.addUserToRoom(roomIdGiven,userIdGiven);
+
+        //then
+        assertThat(result).isFalse();
+    }
+    @Test
+    @DisplayName("should update room with")
+    void update_Room(){
+        Long roomIdGiven = 1L;
+
+        List<Long> items = new ArrayList<>();
+        items.add(1L);
+        RoomManipulationRequest roomManipulationRequestGiven = new RoomManipulationRequest("Raum geaendert", "1234", "Beschreibung", 1L, items);
+
+        ItemEntity itemEntity = new ItemEntity("Bananen", 2,new RoomEntity("test", "1234", "Beschreibung", 1L,null ));
+        doReturn(itemEntity).when(itemRepository.findById(1L));
+
+        Optional<RoomEntity> roomEntity = Optional.of(new RoomEntity("alter Raumname", "12", "Beschreibung", 1L,null));
+        doReturn(roomEntity).when(roomRepository).findById(roomIdGiven);
+
+        /*
+        var roomEntityGiven = Mockito.mock(RoomEntity.class);
+        doReturn(1L).when(roomEntityGiven).getId();*/
+
+        //when
+        Room result = roomService.updateRoom(roomIdGiven, roomManipulationRequestGiven);
+
+        //then
+
+        assertThat(result.getRoomName()).isEqualTo(roomManipulationRequestGiven.getRoomName());
+
 
     }
     @Test
-    @DisplayName("should get all items from Room")
-    void get_all_items_from_Room(){
+    @DisplayName("should delete Room with id")
+    void delete_room(){
         //given
-        Long givenId = 1L;
+        Long roomIdGiven = 1L;
+        doReturn(true).when(roomRepository).existsById(roomIdGiven);
+        doNothing().when(roomRepository).deleteById(roomIdGiven);
 
-        RoomEntity roomEntity = new RoomEntity("Raum1", "1234", "beschreibung", 1,null);
-        List<ItemEntity> itemEntityList = new ArrayList<>();
-        ItemEntity itemEntity1;
-        ItemEntity itemEntity2;
+        //when
+        var result = roomService.deleteRoom(roomIdGiven);
 
-
-
+        //then
+        assertThat(result).isTrue();
     }
+    @Test
+    @DisplayName("should create a room with manipulationRequest")
+    void create_room(){
+        //given
+        //RoomManipulationRequest roomManipulationRequestGivenT = new RoomManipulationRequest("Raum", "1234", "Beschreibung", 1L, null);
+        RoomManipulationRequest roomManipulationRequestGiven = Mockito.mock(RoomManipulationRequest.class);
+        doReturn("Raum").when(roomManipulationRequestGiven).getRoomName();
+        doReturn("1234").when(roomManipulationRequestGiven).getKeyword();
+        doReturn("Beschreibung").when(roomManipulationRequestGiven).getBeschreibung();
+        doReturn(1L).when(roomManipulationRequestGiven).getOwner();
+        doReturn(null).when(roomManipulationRequestGiven).getItems();
+
+    /*
+        RoomEntity roomEntity = Mockito.mock(RoomEntity.class);
+        doReturn(1L).when(roomEntity).getId();
+        doReturn("Raum").when(roomEntity).getRoomName();
+        doReturn("1234").when(roomEntity).getKeyword();
+        doReturn("Beschreibung").when(roomEntity).getBeschreibung();
+        doReturn(1L).when(roomEntity).getOwner();
+        doReturn(null).when(roomEntity).getItems();*/
+
+        //doReturn(roomEntity).when(roomRepository).save(roomEntity);
+        //then
+        var result = roomService.createRoom(roomManipulationRequestGiven);
+
+        //when
+        assertThat(result.getRoomName()).isEqualTo(roomManipulationRequestGiven.getRoomName());
+        assertThat(result.getKeyword()).isEqualTo(roomManipulationRequestGiven.getKeyword());
+        assertThat(result.getBeschreibung()).isEqualTo(roomManipulationRequestGiven.getBeschreibung());
+        assertThat(result.getOwner()).isEqualTo(roomManipulationRequestGiven.getOwner());
+        assertThat(result.getItem()).isEqualTo(roomManipulationRequestGiven.getItems());
+    }
+    @Test
+    @DisplayName("should create a room with manipulationRequest")
+    void get_description(){
+        Long givenId = 1L;
+        RoomEntity room = new RoomEntity("Raum", "1234", "Beschreibung", 1L, null);
+        doReturn(Optional.of(room)).when(roomRepository).findById(givenId);
+
+        //when
+        var result = roomService.getDescription(givenId);
+
+        //then
+        assertThat(result.getDescription()).isEqualTo(room.getBeschreibung());
+    }
+
+
 
 
 

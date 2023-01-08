@@ -58,12 +58,18 @@ public class RoomService {
 
         var roomEntity = entityOtionalEmpty.get();
         List<ItemEntity> items = new ArrayList();
-        for (Long i: request.getItems()){
-            items.add(itemRepository.findById(i).get());
+
+        if(request.getItems() != null){
+            for (Long i: request.getItems()){
+                var itemOptional = itemRepository.findById(i);
+                items.add(itemOptional.get());
+            }
         }
+
 
         roomEntity.setRoomName(request.getRoomName());
         roomEntity.setKeyword(request.getKeyword());
+        roomEntity.setBeschreibung(request.getBeschreibung());
         roomEntity.setOwner(request.getOwner());
         roomEntity.setItems(items);
 
@@ -89,7 +95,8 @@ public class RoomService {
 
     public List<Item> getAllItemsFromRoom(Long raumId){
 
-        var itemEntityList = roomRepository.findById(raumId).get().getItems();
+        var itemEntity = roomRepository.findById(raumId);
+        var itemEntityList = itemEntity.get().getItems();
         List<Item> itemList = new ArrayList<>();
         for(ItemEntity i : itemEntityList){
             itemList.add(new Item(i.getName(),i.getAmmount(),i.getRoom().getId()));
@@ -121,10 +128,11 @@ public class RoomService {
     }
 
     public List<User> getAllUserFromRoom(Long raumId){
-        var userEntityList = roomRepository.findById(raumId).get().getUsers();
+        var userEntity = roomRepository.findById(raumId);
+        var userEntitySet = userEntity.get().getUsers();
         List<User> userList = new ArrayList<>();
 
-        for(UserEntity u: userEntityList){
+        for(UserEntity u: userEntitySet){
             userList.add(new User(u.getId(),u.getUsername(), u.getMail(), u.getPassword()));
         }
         return userList;
@@ -162,14 +170,15 @@ public class RoomService {
         Set<UserEntity> userlist = room.getUsers();
         userlist.add(user);
         room.setUsers(userlist);
-        roomRepository.save(room);
+        var test = roomRepository.save(room);
         return true;
     }
     public void saveDescription(Long id, Description description){
         roomRepository.saveDescription(description.getDescription(),id);
     }
     public Description getDescription(Long id){
-        RoomEntity roomEntity = roomRepository.findById(id).get();
+        var roomEntityOptional = roomRepository.findById(id);
+        var roomEntity = roomEntityOptional.get();
         Room room = roomEntityToRoom(roomEntity);
         if(room.getBeschreibung() ==null){
             return new Description("");
