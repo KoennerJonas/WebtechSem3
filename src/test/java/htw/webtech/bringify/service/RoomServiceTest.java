@@ -256,7 +256,7 @@ public class RoomServiceTest implements WithAssertions {
     void update_Room(){
         Long roomIdGiven = 1L;
 
-        List<Long> items = new ArrayList<>();
+        Set<Long> items = new HashSet<>();
         items.add(1L);
         RoomManipulationRequest roomManipulationRequestGiven = new RoomManipulationRequest("Raum geaendert", "1234", "Beschreibung", 1L, items,null);
 

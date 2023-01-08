@@ -63,12 +63,11 @@ public class RoomService {
         }
 
         var roomEntity = entityOtionalEmpty.get();
-        List<ItemEntity> items = new ArrayList();
+        Set<ItemEntity> items = new HashSet<>();
 
         if(request.getItems() != null){
-            for (Long i: request.getItems()){
-                var itemOptional = itemRepository.findById(i);
-                items.add(itemOptional.get());
+            for (ItemEntity i: request.getItems()){
+                items.add(i);
             }
         }
 
@@ -88,7 +87,7 @@ public class RoomService {
     public void addItemToRoom(ItemManipulationRequest item ){
 
         var room = roomRepository.findById(item.getRaumid()).get();
-        List<ItemEntity> itemList = room.getItems();
+        Set<ItemEntity> itemList = room.getItems();
 
         ItemEntity itemEntity = new ItemEntity(item.getName(),item.getAmmount(),room,null);
         itemList.add(itemEntity);
@@ -98,11 +97,11 @@ public class RoomService {
         roomRepository.save(room);
     }
 
-    public List<Item> getAllItemsFromRoom(Long raumId){
+    public Set<Item> getAllItemsFromRoom(Long raumId){
 
         var roomEntity = roomRepository.findById(raumId);
         var itemEntityList = roomEntity.get().getItems();
-        List<Item> itemList = new ArrayList<>();
+        Set<Item> itemList = new HashSet<>();
         for(ItemEntity i : itemEntityList){
             itemList.add(new Item(i.getId(),i.getName(),i.getAmmount(),i.getRoom().getId(),i.getUsername()));
 

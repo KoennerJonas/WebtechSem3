@@ -1,5 +1,7 @@
 package htw.webtech.bringify.web.api;
 
+import htw.webtech.bringify.persistence.ItemEntity;
+import htw.webtech.bringify.persistence.RoomEntity;
 import htw.webtech.bringify.persistence.UserEntity;
 
 import java.util.List;
@@ -13,10 +15,10 @@ public class RoomManipulationRequest {
     private String beschreibung;
     private long owner;
     private long members;
-    private List<Long> items;
+    private Set<ItemEntity> items;
     private Set<UserEntity> users;
 
-    public RoomManipulationRequest(String roomName, String keyword, String beschreibung, long owner, List<Long> items, Set<UserEntity> users) {
+    public RoomManipulationRequest(String roomName, String keyword, String beschreibung, long owner, Set<ItemEntity> items, Set<UserEntity> users) {
         this.roomName = roomName;
         this.keyword = keyword;
         this.owner = owner;
@@ -59,11 +61,11 @@ public class RoomManipulationRequest {
         this.members = members;
     }
 
-    public List<Long> getItems() {
+    public Set<ItemEntity> getItems() {
         return items;
     }
 
-    public void setItems(List<Long> items) {
+    public void setItems(Set<ItemEntity> items) {
         this.items = items;
     }
 

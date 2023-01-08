@@ -8,6 +8,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.net.URISyntaxException;
 import java.util.List;
+import java.util.Set;
 
 @RestController//sorgt auch dafür, dass dem Browser das Ergebnis der Rest-Methoden als JSON zurückgegeben wird
 public class RoomRestController {
@@ -58,7 +59,7 @@ public class RoomRestController {
     }
 
     @GetMapping(path = "/api/v1/rooms/getitems/{id}")
-    public ResponseEntity<List<Item>> getItems(@PathVariable Long id){
+    public ResponseEntity<Set<Item>> getItems(@PathVariable Long id){
         var items = roomService.getAllItemsFromRoom(id);
         return items != null? ResponseEntity.ok(items):ResponseEntity.notFound().build();
     }

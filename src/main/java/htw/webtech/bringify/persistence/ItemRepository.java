@@ -7,6 +7,7 @@ import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 import javax.transaction.Transactional;
+import java.util.List;
 import java.util.Optional;
 @Repository
 public interface ItemRepository extends JpaRepository<ItemEntity, Long> {
@@ -16,4 +17,5 @@ public interface ItemRepository extends JpaRepository<ItemEntity, Long> {
     @Modifying
     @Query("UPDATE Item i SET i.username= :username WHERE i.id = :id")
     void addUsername(@Param("username") String username, @Param("id") Long id);
+
 }
