@@ -105,7 +105,6 @@ public class RoomServiceTest implements WithAssertions {
 
         //then
 
-<<<<<<< HEAD
 
         List<Item> resultList = new ArrayList<>();
         for(Item i: result){
@@ -114,8 +113,6 @@ public class RoomServiceTest implements WithAssertions {
         assertThat(resultList.get(0).getName()).isEqualTo(expected.get(0).getName());
         assertThat(resultList.get(0).getAmmount()).isEqualTo(expected.get(0).getAmmount());
 
-=======
->>>>>>> 2acd249eeaca551e7f842e6896fefb14550c7776
 
     }
     @Test
@@ -236,32 +233,6 @@ public class RoomServiceTest implements WithAssertions {
         assertThat(result).isFalse();
     }
 
-<<<<<<< HEAD
-=======
-        Set<ItemEntity> items = new HashSet<>();
-
-        RoomManipulationRequest roomManipulationRequestGiven = new RoomManipulationRequest("Raum geaendert", "1234", "Beschreibung", 1L, items,null);
-
-        ItemEntity itemEntity = new ItemEntity("Bananen", 2, new RoomEntity("test", "1234", "Beschreibung", 1L,null ,null),null);
-        doReturn(itemEntity).when(itemRepository.findById(1L));
-
-        Optional<RoomEntity> roomEntity = Optional.of(new RoomEntity("alter Raumname", "12", "Beschreibung", 1L,null,null));
-        doReturn(roomEntity).when(roomRepository).findById(roomIdGiven);
-
-        /*
-        var roomEntityGiven = Mockito.mock(RoomEntity.class);
-        doReturn(1L).when(roomEntityGiven).getId();*/
-
-        //when
-        Room result = roomService.updateRoom(roomIdGiven, roomManipulationRequestGiven);
-
-        //then
-
-        assertThat(result.getRoomName()).isEqualTo(roomManipulationRequestGiven.getRoomName());
-
-
-    }
->>>>>>> 2acd249eeaca551e7f842e6896fefb14550c7776
     @Test
     @DisplayName("should delete Room with id")
     void delete_room(){
