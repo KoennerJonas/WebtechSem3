@@ -11,6 +11,6 @@ jobs:
         uses: actions/setup-java@v2
         with:
           distribution: "adopt"
-          java-version: 16
+          java-version: 17
       - name: clean build
         run: ./gradlew clean test --info --stacktrace
